@@ -1,34 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
-  <rect width="800" height="480" fill="#0e2433"/>
-  <text x="24" y="36" fill="#8fd0d8" font-family="system-ui,sans-serif" font-size="14" letter-spacing="2">CHASIS · VISTA TRASERA</text>
-  <!-- main frame rear -->
-  <rect x="180" y="100" width="440" height="80" rx="6" fill="#1a3a4a" stroke="#8fd0d8" stroke-width="2.5"/>
-  <!-- bumper / estribo -->
-  <rect x="200" y="190" width="400" height="36" rx="4" fill="#1a3a4a" stroke="#8fd0d8" stroke-width="2"/>
-  <text x="340" y="213" fill="#8fd0d8" font-size="13" font-family="system-ui">ESTRIBO / DEFENSA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 480" width="700" height="480">
+  <rect width="700" height="480" fill="#ffffff"/>
+  <text x="20" y="28" fill="#0e2433" font-family="system-ui,sans-serif" font-size="14" font-weight="600" letter-spacing="1.5">CHASIS · VISTA TRASERA / EJES</text>
+  <!-- rear frame -->
+  <rect x="150" y="50" width="400" height="60" fill="none" stroke="#0e2433" stroke-width="2.2"/>
   <!-- plate -->
-  <rect x="320" y="120" width="160" height="40" rx="3" fill="#0e2433" stroke="#f3f1ec" stroke-width="1.5"/>
-  <text x="350" y="145" fill="#f3f1ec" font-size="12" font-family="system-ui">PLACA CIRC.</text>
-  <!-- lights left -->
-  <circle cx="220" cy="140" r="18" fill="#b54a3a" stroke="#f3f1ec" stroke-width="1.5"/>
-  <circle cx="260" cy="140" r="12" fill="#1f8a96" stroke="#8fd0d8" stroke-width="1.5"/>
-  <text x="200" y="90" fill="#8fd0d8" font-size="11" font-family="system-ui">CALAVERAS IZQ</text>
-  <!-- lights right -->
-  <circle cx="580" cy="140" r="18" fill="#b54a3a" stroke="#f3f1ec" stroke-width="1.5"/>
-  <circle cx="540" cy="140" r="12" fill="#1f8a96" stroke="#8fd0d8" stroke-width="1.5"/>
-  <text x="520" y="90" fill="#8fd0d8" font-size="11" font-family="system-ui">CALAVERAS DER</text>
-  <!-- mud flaps / lodera -->
-  <rect x="200" y="240" width="50" height="70" rx="2" fill="#1a3a4a" stroke="#5b6b75" stroke-width="1.5"/>
-  <rect x="550" y="240" width="50" height="70" rx="2" fill="#1a3a4a" stroke="#5b6b75" stroke-width="1.5"/>
-  <text x="195" y="330" fill="#8fd0d8" font-size="11" font-family="system-ui">LODERA</text>
-  <text x="545" y="330" fill="#8fd0d8" font-size="11" font-family="system-ui">LODERA</text>
-  <!-- wheels -->
-  <circle cx="280" cy="380" r="48" fill="#0e2433" stroke="#8fd0d8" stroke-width="3"/>
-  <circle cx="280" cy="380" r="20" fill="#1a3a4a" stroke="#5b6b75" stroke-width="2"/>
-  <circle cx="520" cy="380" r="48" fill="#0e2433" stroke="#8fd0d8" stroke-width="3"/>
-  <circle cx="520" cy="380" r="20" fill="#1a3a4a" stroke="#5b6b75" stroke-width="2"/>
-  <text x="340" y="400" fill="#8fd0d8" font-size="12" font-family="system-ui">LLANTAS TRASERAS</text>
-  <!-- reflective -->
-  <rect x="300" y="250" width="200" height="12" rx="2" fill="#f3f1ec" opacity="0.7"/>
-  <text x="340" y="280" fill="#8fd0d8" font-size="11" font-family="system-ui">REFLEJANTES</text>
+  <rect x="280" y="62" width="140" height="36" fill="none" stroke="#0e2433" stroke-width="1.5"/>
+  <!-- lights -->
+  <circle cx="180" cy="80" r="14" fill="none" stroke="#0e2433" stroke-width="2"/>
+  <circle cx="520" cy="80" r="14" fill="none" stroke="#0e2433" stroke-width="2"/>
+  <!-- bumper -->
+  <rect x="170" y="120" width="360" height="30" fill="none" stroke="#0e2433" stroke-width="2"/>
+  <!-- mud flaps -->
+  <rect x="180" y="160" width="45" height="70" fill="none" stroke="#0e2433" stroke-width="1.5"/>
+  <rect x="475" y="160" width="45" height="70" fill="none" stroke="#0e2433" stroke-width="1.5"/>
+  <!-- dual wheels left assembly -->
+  <rect x="120" y="280" width="200" height="50" fill="none" stroke="#0e2433" stroke-width="2"/>
+  <rect x="140" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="185" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="230" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="275" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <!-- dual wheels right assembly -->
+  <rect x="380" y="280" width="200" height="50" fill="none" stroke="#0e2433" stroke-width="2"/>
+  <rect x="400" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="445" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="490" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <rect x="535" y="340" width="35" height="70" fill="none" stroke="#0e2433" stroke-width="1.8"/>
+  <!-- axle center -->
+  <circle cx="220" cy="305" r="12" fill="none" stroke="#0e2433" stroke-width="1.5"/>
+  <circle cx="480" cy="305" r="12" fill="none" stroke="#0e2433" stroke-width="1.5"/>
+  <text x="160" y="270" fill="#5b6b75" font-size="12" font-family="system-ui">EJE DELANTERO BOGIE</text>
+  <text x="420" y="270" fill="#5b6b75" font-size="12" font-family="system-ui">EJE TRASERO BOGIE</text>
+  <text x="300" y="55" fill="#5b6b75" font-size="11" font-family="system-ui">PLACA · CALAVERAS · DEFENSA</text>
 </svg>

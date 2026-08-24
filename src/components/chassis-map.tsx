@@ -1,4 +1,4 @@
-import { Camera, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { useState } from "react";
 import {
   CHASSIS_VIEWS,
@@ -17,6 +17,10 @@ function capturedCount(view: ChassisViewId, captured: Record<string, ChassisCapt
   return chassisPointsForView(view).filter((p) => captured[p.id]?.thumb).length;
 }
 
+/**
+ * Mapa de inspección de chasis: plano técnico + puntos tocables.
+ * Misma interacción que el mapa de contenedor (sin listado dominante).
+ */
 export function ChassisMap({
   captured = {},
   selectedId,
@@ -36,7 +40,7 @@ export function ChassisMap({
   side?: ChassisLateralSide;
   onSideChange?: (side: ChassisLateralSide) => void;
 }) {
-  const [inner, setInner] = useState<ChassisViewId>(viewProp ?? initialView ?? "frente");
+  const [inner, setInner] = useState<ChassisViewId>(viewProp ?? initialView ?? "lateral");
   const [innerSide, setInnerSide] = useState<ChassisLateralSide>(sideProp ?? "derecho");
   const view = viewProp ?? inner;
   const side = sideProp ?? innerSide;
@@ -97,9 +101,15 @@ export function ChassisMap({
         </div>
       ) : null}
 
-      <div className="overflow-hidden rounded-md border border-line bg-navy-deep">
+      {/* Plano técnico con puntos — interacción principal */}
+      <div className="overflow-hidden rounded-md border border-line bg-white">
         <div className="relative mx-auto w-full">
-          <img src={meta.src} alt={meta.title} className="block h-auto w-full select-none" />
+          <img
+            src={meta.src}
+            alt={`Plano de chasis · ${meta.title}`}
+            className="block h-auto w-full select-none"
+            draggable={false}
+          />
           {points.map((p) => {
             const cap = captured[p.id];
             const active = selectedId === p.id;
@@ -117,9 +127,9 @@ export function ChassisMap({
               >
                 <span
                   className={cn(
-                    "grid size-7 place-items-center rounded-full text-[11px] font-bold leading-none text-paper shadow-[0_0_0_2px_var(--color-card),0_2px_8px_rgba(8,21,31,0.45)]",
+                    "grid size-7 place-items-center rounded-full text-[11px] font-bold leading-none text-paper shadow-[0_0_0_2px_#fff,0_2px_8px_rgba(8,21,31,0.45)]",
                     cap?.thumb ? "bg-teal" : "bg-rust",
-                    active && "size-8 text-xs ring-2 ring-teal ring-offset-2 ring-offset-navy",
+                    active && "size-8 text-xs ring-2 ring-teal ring-offset-2 ring-offset-white",
                   )}
                 >
                   {cap?.thumb ? <Check className="size-3.5" strokeWidth={3} /> : p.n}
@@ -130,45 +140,9 @@ export function ChassisMap({
         </div>
       </div>
 
-      <ul className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
-        {points.map((p) => {
-          const cap = captured[p.id];
-          const active = selectedId === p.id;
-          return (
-            <li key={p.id}>
-              <button
-                type="button"
-                onClick={() => onPick(p, side)}
-                className={cn(
-                  "flex min-h-11 w-full items-center gap-2 rounded-md border px-2 py-1.5 text-left transition-colors",
-                  active
-                    ? "border-teal bg-teal-soft"
-                    : cap?.thumb
-                      ? "border-line bg-ok-soft/40 hover:border-teal/50"
-                      : "border-line bg-card hover:border-teal/50",
-                )}
-              >
-                <span
-                  className={cn(
-                    "grid size-7 shrink-0 place-items-center rounded-full text-[11px] font-bold text-paper",
-                    cap?.thumb ? "bg-teal" : "bg-rust",
-                  )}
-                >
-                  {p.n}
-                </span>
-                {cap?.thumb ? (
-                  <img src={cap.thumb} alt="" className="size-8 shrink-0 rounded-sm object-cover" />
-                ) : (
-                  <span className="grid size-8 shrink-0 place-items-center rounded-sm border border-dashed border-line text-steel">
-                    <Camera className="size-3.5" />
-                  </span>
-                )}
-                <span className="min-w-0 flex-1 truncate text-sm font-medium text-navy">{p.label}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
+      <p className="text-center text-[11px] text-steel">
+        Toque un punto del plano de <strong className="text-navy">chasis</strong> para fotografiar
+      </p>
     </div>
   );
 }
