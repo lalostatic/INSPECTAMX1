@@ -14,7 +14,7 @@
  *
  * MODIFICAR: DEV_WHATSAPP para el contacto de soporte.
  */
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
@@ -38,22 +38,36 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 export function LoginView() {
-  const { user, isPending } = useCurrentUserState();
+  const { user } = useCurrentUserState();
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [ready, setReady] = useState(false);
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
+  useEffect(() => {
+    setReady(true);
+  }, []);
+
+  async function onSubmit(e?: FormEvent) {
+    e?.preventDefault();
+    if (busy) return;
     setError("");
     setBusy(true);
     try {
-      const res = await authClient.signIn.email({ email, password });
-      if (res.error) throw new Error(res.error.message || "Correo o contraseña incorrectos");
-      clearBillingSkip();
-      await nav({ to: "/" });
+      let last = "Correo o contraseña incorrectos";
+      for (let i = 0; i < 10; i += 1) {
+        const res = await authClient.signIn.email({ email, password });
+        if (!res.error) {
+          clearBillingSkip();
+          await nav({ to: "/" });
+          return;
+        }
+        last = res.error.message || last;
+        await new Promise((r) => setTimeout(r, 800));
+      }
+      throw new Error(last);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo entrar");
     } finally {
@@ -61,17 +75,6 @@ export function LoginView() {
     }
   }
 
-  if (isPending) {
-    return (
-      <main className="relative grid min-h-dvh place-items-center overflow-hidden bg-navy px-5">
-        <img src="/login-hero.jpg" alt="" className="absolute inset-0 size-full object-cover opacity-55" />
-        <div className="absolute inset-0 bg-navy/70" />
-        <div className="relative">
-          <Wordmark light />
-        </div>
-      </main>
-    );
-  }
   if (user) return <Navigate to="/" />;
 
   return (
@@ -87,6 +90,7 @@ export function LoginView() {
 
         <form
           onSubmit={(e) => void onSubmit(e)}
+          data-ready={ready ? "1" : "0"}
           className="mt-8 space-y-3 rounded-xl border border-line bg-card p-6 text-ink shadow-card"
         >
           <h1 className="font-display text-3xl tracking-wide text-navy">Iniciar sesión</h1>
@@ -111,7 +115,7 @@ export function LoginView() {
             />
           </Field>
           {error ? <p className="text-sm text-rust">{error}</p> : null}
-          <Button type="submit" className="w-full" disabled={busy}>
+          <Button type="button" className="w-full" disabled={busy || !ready} onClick={() => void onSubmit()}>
             {busy ? "Entrando…" : "Entrar"}
           </Button>
         </form>

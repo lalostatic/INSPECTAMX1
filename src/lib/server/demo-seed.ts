@@ -12,7 +12,7 @@ import { ensureAllTenants, ensureOrgTenant, schemaNameFromOrgId } from "@/lib/se
 import { todayISO } from "@/lib/utils";
 
 const globalRef = globalThis as typeof globalThis & {
-  __inspectamxDemoSeed_v2__?: Promise<void>;
+  __inspectamxDemoSeed_v3__?: Promise<void>;
 };
 
 async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string> {
@@ -155,9 +155,31 @@ async function seedPlatformSamples(orgIds: { id: string; name: string }[]) {
   );
 }
 
+async function demoAlreadySeeded(): Promise<boolean> {
+  try {
+    const sql = await getSql();
+    const [row] = await sql<{ c: number }>`
+      select count(*)::int as c from "user"
+      where email = ${DEVELOPER_EMAIL}
+         or email = ${"admin@cerlan.mx"}
+         or email = ${"admin@contri.mx"}
+         or email = ${"admin@istmo.mx"}
+    `;
+    return (row?.c ?? 0) >= 4;
+  } catch {
+    return false;
+  }
+}
+
 export async function seedDemoAccounts() {
-  if (!globalRef.__inspectamxDemoSeed_v2__) {
-    globalRef.__inspectamxDemoSeed_v2__ = (async () => {
+  if (!globalRef.__inspectamxDemoSeed_v3__) {
+    globalRef.__inspectamxDemoSeed_v3__ = (async () => {
+      console.info("[inspectamx] demo seed start");
+      if (await demoAlreadySeeded()) {
+        await seedEnginesForExistingOrgs();
+        console.info("[inspectamx] demo seed already present");
+        return;
+      }
       for (const email of DEVELOPER_EMAILS) {
         await createCredentialUser({
           name: "Desarrollador INSPECTAMX",
@@ -216,12 +238,13 @@ export async function seedDemoAccounts() {
       }
       await ensureAllTenants();
       await seedPlatformSamples(orgIds);
+      console.info("[inspectamx] demo seed done");
     })().catch((err) => {
-      globalRef.__inspectamxDemoSeed_v2__ = undefined;
+      globalRef.__inspectamxDemoSeed_v3__ = undefined;
       throw err;
     });
   }
-  await globalRef.__inspectamxDemoSeed_v2__;
+  await globalRef.__inspectamxDemoSeed_v3__;
 }
 
 async function seedEnginesForExistingOrgs() {
@@ -237,14 +260,10 @@ async function seedEnginesForExistingOrgs() {
   }
 }
 
-/** Public, unauthenticated — runs when the login page loads. */
+/** Kick off seed without blocking the HTTP request (avoids abort/hang on preview). */
 export const ensureDemoUsers = createServerFn({ method: "GET" }).handler(async () => {
-  try {
-    await seedDemoAccounts();
-    await seedEnginesForExistingOrgs();
-    return { ok: true };
-  } catch (err) {
+  void seedDemoAccounts().catch((err) => {
     console.error("[inspectamx] demo seed failed", err);
-    return { ok: false };
-  }
+  });
+  return { ok: true };
 });

@@ -4,7 +4,7 @@ import { ensureDemoUsers } from "@/lib/server/demo-seed";
 
 export const Route = createFileRoute("/login")({
   loader: async () => {
-    await ensureDemoUsers();
+    void ensureDemoUsers();
     return {};
   },
   component: LoginView,

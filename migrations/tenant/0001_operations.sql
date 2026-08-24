@@ -1,4 +1,4 @@
--- Applied to every patio schema. Modules toggle access — they do not fork this DDL.
+-- Applied to every patio schema. Modules toggle access; they do not fork this DDL.
 
 create table if not exists __SCHEMA__.inspections (
   id               text primary key,

@@ -69,31 +69,36 @@ export type TemplateDetail = TemplateListItem & {
 export const listTemplates = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<TemplateListItem[]> => {
-    const { sql, T } = await ctx(context.userId);
-    const rows = await sql.query<{
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      kind: string;
-      scoring_enabled: boolean;
-      active: boolean;
-      field_count: number;
-    }>(
-      `select t.id, t.name, t.description, t.category, t.kind, t.scoring_enabled, t.active,
-              (select count(*)::int from ${T.template_fields} f where f.template_id = t.id) as field_count
-       from ${T.templates} t order by t.name`,
-    );
-    return rows.map((r) => ({
-      id: r.id,
-      name: r.name,
-      description: r.description,
-      category: r.category,
-      kind: r.kind,
-      scoringEnabled: Boolean(r.scoring_enabled),
-      active: Boolean(r.active),
-      fieldCount: Number(r.field_count) || 0,
-    }));
+    try {
+      const { sql, T } = await ctx(context.userId);
+      const rows = await sql.query<{
+        id: string;
+        name: string;
+        description: string;
+        category: string;
+        kind: string;
+        scoring_enabled: boolean;
+        active: boolean;
+        field_count: number;
+      }>(
+        `select t.id, t.name, t.description, t.category, t.kind, t.scoring_enabled, t.active,
+                (select count(*)::int from ${T.template_fields} f where f.template_id = t.id) as field_count
+         from ${T.templates} t order by t.name`,
+      );
+      return rows.map((r) => ({
+        id: r.id,
+        name: r.name,
+        description: r.description,
+        category: r.category,
+        kind: r.kind,
+        scoringEnabled: Boolean(r.scoring_enabled),
+        active: Boolean(r.active),
+        fieldCount: Number(r.field_count) || 0,
+      }));
+    } catch (err) {
+      console.error("[inspectamx] listTemplates", err);
+      return [];
+    }
   });
 
 export const getTemplate = createServerFn({ method: "GET" })
@@ -973,65 +978,84 @@ export type EngineDash = {
   widgets: string[];
 };
 
+function emptyDash(): EngineDash {
+  return {
+    records: 0,
+    recordsToday: 0,
+    incidents: 0,
+    incidentsOpen: 0,
+    tasksOpen: 0,
+    avgScore: null,
+    byStatus: [],
+    live: [],
+    widgets: ["inspecciones", "incidencias", "estados", "tareas", "score", "vivos"],
+  };
+}
+
 export const getEngineDashboard = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<EngineDash> => {
-    const { sql, T } = await ctx(context.userId);
-    const [c] = await sql.query<{ c: number }>(`select count(*)::int as c from ${T.records}`);
-    const [today] = await sql.query<{ c: number }>(
-      `select count(*)::int as c from ${T.records} where created_at >= date_trunc('day', now())`,
-    );
-    const [inc] = await sql.query<{ c: number }>(`select count(*)::int as c from ${T.record_incidents}`);
-    const [tasks] = await sql.query<{ c: number }>(
-      `select count(*)::int as c from ${T.assignments} where status = 'abierta'`,
-    );
-    const [avg] = await sql.query<{ a: number | null }>(`select avg(score)::int as a from ${T.records} where score is not null`);
-    const byStatus = await sql.query<{ status: string; c: number }>(
-      `select status, count(*)::int as c from ${T.records} group by status order by c desc`,
-    );
-    const liveRows = await sql.query<{
-      id: string;
-      folio: number;
-      template_name: string;
-      inspector_name: string;
-      status: string;
-      score: number | null;
-      score_label: string;
-      tags: string;
-      created_at: string;
-      asset_code: string;
-    }>(
-      `select r.id, r.folio, coalesce(t.name,'') as template_name, r.inspector_name, r.status,
-              r.score, r.score_label, r.tags, r.created_at, coalesce(a.code,'') as asset_code
-       from ${T.records} r
-       left join ${T.templates} t on t.id = r.template_id
-       left join ${T.assets} a on a.id = r.asset_id
-       order by r.created_at desc limit 12`,
-    );
-    const [pref] = await sql.query<{ widgets: string }>(`select widgets from ${T.dashboard_prefs} where id = 'default'`);
-    const widgets = (pref?.widgets || "inspecciones,incidencias,estados,tareas,score,vivos").split(",").filter(Boolean);
-    return {
-      records: c?.c ?? 0,
-      recordsToday: today?.c ?? 0,
-      incidents: inc?.c ?? 0,
-      incidentsOpen: inc?.c ?? 0,
-      tasksOpen: tasks?.c ?? 0,
-      avgScore: avg?.a ?? null,
-      byStatus,
-      live: liveRows.map((r) => ({
-        id: r.id,
-        folio: folioLabel(r.folio),
-        templateName: r.template_name,
-        inspectorName: r.inspector_name,
-        status: r.status,
-        score: r.score,
-        scoreLabel: r.score_label,
-        tags: r.tags,
-        createdAt: asIso(r.created_at),
-        assetCode: r.asset_code,
-      })),
-      widgets,
-    };
+    try {
+      const { sql, T } = await ctx(context.userId);
+      const [c] = await sql.query<{ c: number }>(`select count(*)::int as c from ${T.records}`);
+      const [today] = await sql.query<{ c: number }>(
+        `select count(*)::int as c from ${T.records} where created_at >= date_trunc('day', now())`,
+      );
+      const [inc] = await sql.query<{ c: number }>(`select count(*)::int as c from ${T.record_incidents}`);
+      const [tasks] = await sql.query<{ c: number }>(
+        `select count(*)::int as c from ${T.assignments} where status = 'abierta'`,
+      );
+      const [avg] = await sql.query<{ a: number | null }>(`select avg(score)::int as a from ${T.records} where score is not null`);
+      const byStatus = await sql.query<{ status: string; c: number }>(
+        `select status, count(*)::int as c from ${T.records} group by status order by c desc`,
+      );
+      const liveRows = await sql.query<{
+        id: string;
+        folio: number;
+        template_name: string;
+        inspector_name: string;
+        status: string;
+        score: number | null;
+        score_label: string;
+        tags: string;
+        created_at: string;
+        asset_code: string;
+      }>(
+        `select r.id, r.folio, coalesce(t.name,'') as template_name, r.inspector_name, r.status,
+                r.score, r.score_label, r.tags, r.created_at, coalesce(a.code,'') as asset_code
+         from ${T.records} r
+         left join ${T.templates} t on t.id = r.template_id
+         left join ${T.assets} a on a.id = r.asset_id
+         order by r.created_at desc limit 12`,
+      );
+      const [pref] = await sql.query<{ widgets: string }>(`select widgets from ${T.dashboard_prefs} where id = 'default'`);
+      const widgets = (pref?.widgets || "inspecciones,incidencias,estados,tareas,score,vivos").split(",").filter(Boolean);
+      return {
+        records: c?.c ?? 0,
+        recordsToday: today?.c ?? 0,
+        incidents: inc?.c ?? 0,
+        incidentsOpen: inc?.c ?? 0,
+        tasksOpen: tasks?.c ?? 0,
+        avgScore: avg?.a ?? null,
+        byStatus,
+        live: liveRows.map((r) => ({
+          id: r.id,
+          folio: folioLabel(r.folio),
+          templateName: r.template_name,
+          inspectorName: r.inspector_name,
+          status: r.status,
+          score: r.score,
+          scoreLabel: r.score_label,
+          tags: r.tags,
+          createdAt: asIso(r.created_at),
+          assetCode: r.asset_code,
+        })),
+        widgets,
+      };
+    } catch (err) {
+      console.error("[inspectamx] getEngineDashboard", err);
+      return emptyDash();
+    }
   });
 
 export const saveDashboardPrefs = createServerFn({ method: "POST" })

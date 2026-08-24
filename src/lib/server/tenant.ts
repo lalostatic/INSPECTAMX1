@@ -194,7 +194,11 @@ export const getSession = createServerFn({ method: "GET" })
     const membership = await loadMembership(context.userId);
     const developer = isDeveloperEmail(user?.email);
     if (membership?.authorized) {
-      membership.dbSchema = await ensureOrgTenant(membership.orgId);
+      try {
+        membership.dbSchema = await ensureOrgTenant(membership.orgId);
+      } catch (err) {
+        console.error("[inspectamx] tenant schema", err);
+      }
     }
     const billing = membership ? await billingForOrg(membership.orgId) : null;
     return {
