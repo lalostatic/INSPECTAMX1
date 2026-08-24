@@ -62,7 +62,7 @@ async function addTemplate(
   await sql.query(
     `insert into ${T.templates} (id, name, description, category, kind, scoring_enabled)
      values ($1,$2,$3,$4,$5,$6)`,
-    [id, opts.name, opts.description, opts.category, opts.kind, opts.kind !== "container_map"],
+    [id, opts.name, opts.description, opts.category, opts.kind, opts.kind !== "container_map" && opts.kind !== "chassis_map"],
   );
   await addStatuses(sql, T.template_statuses, id);
   await addFields(sql, T.template_fields, id, opts.fields);
@@ -122,6 +122,14 @@ export async function seedEngine(orgId: string, pack: "cerlan" | "contri" | "ist
     description: "Mapa de unidad, puertas, interior y laterales. El daño es opcional.",
     category: "Contenedor",
     kind: "container_map",
+    fields: [],
+  });
+
+  await addTemplate(sql, T, {
+    name: "Estado de chasis",
+    description: "Formato de intercambio de chasis: vista superior, elevación y lista IZQ/DER.",
+    category: "Chasis",
+    kind: "chassis_map",
     fields: [],
   });
 
