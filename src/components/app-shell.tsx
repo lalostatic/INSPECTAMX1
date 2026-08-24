@@ -43,7 +43,10 @@ export function AppShell({
         to: canCreateInspection(membership.role) ? "/levantar" : "/registros",
         label: "Levantar",
         icon: Camera,
-        match: (p) => p.startsWith("/levantar") || p.startsWith("/nueva"),
+        match: (p) =>
+          p.startsWith("/levantar") ||
+          p.startsWith("/nueva") ||
+          p.startsWith("/chasis"),
       },
       {
         to: "/registros",
