@@ -1,6 +1,11 @@
 import { Check, Camera } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CHASSIS_GROUPS, CHASSIS_POINTS, type ChassisPoint } from "@/lib/chassis-points";
+import {
+  CHASSIS_GROUPS,
+  CHASSIS_POINTS,
+  sideLabel,
+  type ChassisPoint,
+} from "@/lib/chassis-points";
 import { cn } from "@/lib/utils";
 
 export type ChassisCapture = { ok?: boolean; thumb?: string; note?: string };
@@ -29,38 +34,37 @@ export function ChassisMap({
         </p>
       </div>
 
+      {/* ── Vista superior (como el diagrama derecho del PDF) ── */}
       <div className="overflow-hidden rounded-md border border-line bg-navy-deep p-3">
+        <p className="mb-1 text-center text-[10px] uppercase tracking-wider text-paper/55">
+          Vista superior · frente a la izquierda
+        </p>
         <svg
           viewBox="0 0 100 70"
-          className="mx-auto block h-auto w-full max-w-xl text-paper"
-          aria-label="Diagrama de chasis"
+          className="mx-auto block h-auto w-full max-w-xl"
+          aria-label="Diagrama superior de chasis"
         >
-          <rect
-            x="8"
-            y="28"
-            width="78"
-            height="14"
-            rx="2"
-            fill="#1f8a96"
-            opacity="0.35"
-            stroke="#8fd0d8"
-            strokeWidth="0.4"
-          />
-          <rect
-            x="4"
-            y="30"
-            width="10"
-            height="10"
-            rx="1"
-            fill="#0e2433"
-            stroke="#8fd0d8"
-            strokeWidth="0.3"
-          />
-          <circle cx="72" cy="22" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
-          <circle cx="72" cy="48" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
-          <circle cx="82" cy="22" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
-          <circle cx="82" cy="48" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
-          <line x1="68" y1="35" x2="86" y2="35" stroke="#8fd0d8" strokeWidth="0.4" />
+          {/* Cuello de ganso */}
+          <rect x="4" y="28" width="12" height="14" rx="1" fill="#0e2433" stroke="#8fd0d8" strokeWidth="0.35" />
+          {/* Bastidor principal */}
+          <rect x="14" y="26" width="72" height="18" rx="1.5" fill="#1f8a96" opacity="0.3" stroke="#8fd0d8" strokeWidth="0.4" />
+          {/* Traviesas */}
+          <line x1="28" y1="26" x2="28" y2="44" stroke="#8fd0d8" strokeWidth="0.3" opacity="0.6" />
+          <line x1="42" y1="26" x2="42" y2="44" stroke="#8fd0d8" strokeWidth="0.3" opacity="0.6" />
+          <line x1="56" y1="26" x2="56" y2="44" stroke="#8fd0d8" strokeWidth="0.3" opacity="0.6" />
+          <line x1="70" y1="26" x2="70" y2="44" stroke="#8fd0d8" strokeWidth="0.3" opacity="0.6" />
+          {/* Patines (landing gear) */}
+          <rect x="24" y="18" width="6" height="8" rx="0.5" fill="none" stroke="#8fd0d8" strokeWidth="0.35" />
+          <rect x="24" y="44" width="6" height="8" rx="0.5" fill="none" stroke="#8fd0d8" strokeWidth="0.35" />
+          {/* Ejes / ruedas */}
+          <circle cx="72" cy="16" r="5.5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <circle cx="72" cy="54" r="5.5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <circle cx="84" cy="16" r="5.5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <circle cx="84" cy="54" r="5.5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <line x1="66" y1="35" x2="90" y2="35" stroke="#8fd0d8" strokeWidth="0.35" />
+          {/* Defensa trasera */}
+          <rect x="90" y="30" width="4" height="10" rx="0.5" fill="#0e2433" stroke="#8fd0d8" strokeWidth="0.3" />
+
           {CHASSIS_POINTS.map((p) => {
             const cap = captured[p.id];
             const active = selectedId === p.id;
@@ -70,19 +74,65 @@ export function ChassisMap({
                 <circle
                   cx={p.x}
                   cy={p.y}
-                  r={active ? 2.4 : 1.8}
+                  r={active ? 2.6 : 1.9}
                   fill={marked ? "#1f8a96" : "#b54a3a"}
                   stroke={active ? "#f3f1ec" : "transparent"}
-                  strokeWidth="0.4"
+                  strokeWidth="0.45"
                 />
                 <title>{`${p.n}. ${p.label}`}</title>
               </g>
             );
           })}
         </svg>
-        <p className="mt-2 text-center text-[10px] uppercase tracking-wider text-paper/60">
-          Vista superior · frente a la izquierda
+      </div>
+
+      {/* ── Elevación lateral (como el diagrama inferior del PDF) ── */}
+      <div className="overflow-hidden rounded-md border border-line bg-navy-deep p-3">
+        <p className="mb-1 text-center text-[10px] uppercase tracking-wider text-paper/55">
+          Elevación lateral · sistema del carro de ejes
         </p>
+        <svg
+          viewBox="0 0 100 28"
+          className="mx-auto block h-auto w-full max-w-xl"
+          aria-label="Elevación lateral de chasis"
+        >
+          {/* Tirante longitudinal / viga */}
+          <rect x="4" y="10" width="88" height="4" rx="0.8" fill="#1f8a96" opacity="0.45" stroke="#8fd0d8" strokeWidth="0.35" />
+          {/* Cuello de ganso */}
+          <path d="M4 12 L4 8 L12 8 L14 12" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          {/* Patín / landing gear */}
+          <line x1="22" y1="14" x2="22" y2="22" stroke="#8fd0d8" strokeWidth="0.4" />
+          <line x1="20" y1="22" x2="24" y2="22" stroke="#8fd0d8" strokeWidth="0.4" />
+          {/* Ruedas delanteras del bogie */}
+          <circle cx="68" cy="20" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <circle cx="68" cy="20" r="2" fill="#0e2433" stroke="#8fd0d8" strokeWidth="0.25" />
+          {/* Ruedas traseras del bogie */}
+          <circle cx="80" cy="20" r="5" fill="none" stroke="#8fd0d8" strokeWidth="0.5" />
+          <circle cx="80" cy="20" r="2" fill="#0e2433" stroke="#8fd0d8" strokeWidth="0.25" />
+          {/* Eje */}
+          <line x1="63" y1="20" x2="85" y2="20" stroke="#8fd0d8" strokeWidth="0.3" />
+          {/* Estribo / placa */}
+          <rect x="90" y="12" width="5" height="6" rx="0.4" fill="none" stroke="#8fd0d8" strokeWidth="0.35" />
+
+          {CHASSIS_POINTS.filter((p) => p.sx != null && p.sy != null).map((p) => {
+            const cap = captured[p.id];
+            const active = selectedId === p.id;
+            const marked = Boolean(cap?.ok || cap?.thumb);
+            return (
+              <g key={`s-${p.id}`} onClick={() => onPick(p)} className="cursor-pointer">
+                <circle
+                  cx={p.sx!}
+                  cy={p.sy! * 0.28}
+                  r={active ? 1.8 : 1.3}
+                  fill={marked ? "#1f8a96" : "#b54a3a"}
+                  stroke={active ? "#f3f1ec" : "transparent"}
+                  strokeWidth="0.35"
+                />
+                <title>{`${p.n}. ${p.label}`}</title>
+              </g>
+            );
+          })}
+        </svg>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
@@ -127,10 +177,11 @@ export function ChassisMap({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block font-medium text-navy">{p.label}</span>
-                  <span className="text-[11px] text-steel">
-                    {p.side === "centro" ? "Centro" : p.side === "izquierdo" ? "Izquierdo" : "Derecho"}
-                  </span>
+                  <span className="text-[11px] text-steel">{sideLabel(p.side)}</span>
                 </span>
+                {cap?.ok && !cap?.thumb ? (
+                  <span className="text-[11px] font-medium text-teal-dark">OK</span>
+                ) : null}
                 {cap?.thumb ? (
                   <img
                     src={cap.thumb}
