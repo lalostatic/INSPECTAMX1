@@ -56,7 +56,7 @@ function EquipoForm({
           El correo decide el patio: admin@{domain || "empresa.mx"} no se mezcla con otra empresa.
           {" "}
           <Link to="/configuracion" className="text-teal-dark">
-            SMTP y respaldos
+            SMTP, plantillas y respaldos
           </Link>
         </p>
       </div>

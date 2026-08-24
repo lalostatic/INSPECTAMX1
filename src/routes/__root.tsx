@@ -22,7 +22,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "INSPECTAMX — inspección, taller y almacén de patio.",
+          "INSPECTAMX — crea, ejecuta, supervisa y documenta cualquier proceso de inspección desde un solo lugar.",
       },
       { name: "theme-color", content: "#0E2433" },
     ],

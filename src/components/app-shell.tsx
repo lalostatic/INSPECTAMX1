@@ -1,12 +1,21 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Camera, ClipboardList, LayoutDashboard, LogOut, PaintBucket, Users, Wrench } from "lucide-react";
+import {
+  Camera,
+  ClipboardList,
+  LayoutDashboard,
+  ListTodo,
+  LogOut,
+  Search,
+  Users,
+} from "lucide-react";
 import { type ReactNode, useMemo, useState } from "react";
 import { signOut } from "@/lib/auth/client";
 import { useCurrentUser } from "@/lib/auth/use-current-user";
 import type { BillingSnapshot } from "@/lib/billing";
 import { clearBillingSkip } from "@/lib/billing";
 import { ROLE_LABEL } from "@/lib/catalog";
-import { canSeeModule } from "@/lib/roles";
+import { canCreateInspection, canManageUsers } from "@/lib/roles";
+import { stopImpersonation } from "@/lib/server/platform";
 import type { Membership } from "@/lib/types";
 import { cn, initials } from "@/lib/utils";
 import { Wordmark } from "./mark";
@@ -14,10 +23,12 @@ import { Wordmark } from "./mark";
 export function AppShell({
   membership,
   billing,
+  impersonating,
   children,
 }: {
   membership: Membership;
   billing?: BillingSnapshot | null;
+  impersonating?: boolean;
   children: ReactNode;
 }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
@@ -26,57 +37,49 @@ export function AppShell({
   const name = membership.displayName || user?.displayName || user?.primaryEmail || "Cuenta";
 
   const nav = useMemo(() => {
-    const items: { to: string; label: string; icon: typeof LayoutDashboard; match: (p: string) => boolean }[] = [
+    const items: { to: string; label: string; icon: typeof LayoutDashboard; match: (p: string) => boolean; desktopOnly?: boolean }[] = [
       { to: "/", label: "Inicio", icon: LayoutDashboard, match: (p) => p === "/" },
-    ];
-    if (membership.modules.inspeccion && canSeeModule(membership.role, "inspeccion")) {
-      items.push({
-        to: "/nueva",
-        label: "Inspección",
+      {
+        to: canCreateInspection(membership.role) ? "/levantar" : "/registros",
+        label: "Levantar",
         icon: Camera,
-        match: (p) => p.startsWith("/nueva") || p.startsWith("/inspecciones"),
-      });
-    }
-    if (membership.modules.mr && canSeeModule(membership.role, "mr")) {
-      items.push({ to: "/mr", label: "M&R", icon: Wrench, match: (p) => p.startsWith("/mr") });
-    }
-    if (membership.modules.pintura && canSeeModule(membership.role, "pintura")) {
+        match: (p) => p.startsWith("/levantar") || p.startsWith("/nueva"),
+      },
+      {
+        to: "/registros",
+        label: "Folios",
+        icon: ClipboardList,
+        match: (p) => p.startsWith("/registros") || p.startsWith("/inspecciones"),
+      },
+      { to: "/tareas", label: "Tareas", icon: ListTodo, match: (p) => p.startsWith("/tareas") },
+      { to: "/buscar", label: "Buscar", icon: Search, match: (p) => p.startsWith("/buscar") },
+    ];
+    if (canManageUsers(membership.role)) {
       items.push({
-        to: "/almacen",
-        label: "Pintura",
-        icon: PaintBucket,
-        match: (p) => p.startsWith("/almacen"),
+        to: "/equipo",
+        label: "Equipo",
+        icon: Users,
+        match: (p) =>
+          p.startsWith("/equipo") ||
+          p.startsWith("/configuracion") ||
+          p.startsWith("/plantillas") ||
+          p.startsWith("/sucursales") ||
+          p.startsWith("/automatizaciones"),
+        desktopOnly: true,
       });
-    }
-    if (membership.role === "office" || membership.role === "admin") {
-      if (!items.some((i) => i.to === "/inspecciones") && membership.modules.inspeccion) {
-        items.push({
-          to: "/inspecciones",
-          label: "Folios",
-          icon: ClipboardList,
-          match: (p) => p.startsWith("/inspecciones"),
-        });
-      }
-    }
-    if (membership.role === "admin") {
-      items.push({ to: "/equipo", label: "Equipo", icon: Users, match: (p) => p.startsWith("/equipo") || p.startsWith("/configuracion") });
-    }
-    if (membership.role === "admin" || membership.role === "office" || membership.role === "supervisor") {
-      items.push({ to: "/reportes", label: "Reportes", icon: ClipboardList, match: (p) => p.startsWith("/reportes") });
     }
     return items;
   }, [membership]);
 
+  const mobileNav = nav.filter((n) => !n.desktopOnly);
   const cols =
-    nav.length <= 2
+    mobileNav.length <= 2
       ? "grid-cols-2"
-      : nav.length === 3
+      : mobileNav.length === 3
         ? "grid-cols-3"
-        : nav.length === 4
+        : mobileNav.length === 4
           ? "grid-cols-4"
-          : nav.length === 5
-            ? "grid-cols-5"
-            : "grid-cols-6";
+          : "grid-cols-5";
 
   return (
     <div className="min-h-dvh bg-paper text-ink">
@@ -85,7 +88,7 @@ export function AppShell({
           <Link to="/" className="shrink-0">
             <Wordmark light />
           </Link>
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center gap-1 lg:flex">
             {nav.map((item) => (
               <Link
                 key={item.to}
@@ -131,6 +134,21 @@ export function AppShell({
         </div>
       </header>
 
+      {impersonating ? (
+        <div className="bg-rust text-paper no-print">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-2 text-sm">
+            <p>Soporte INSPECTAMX · viendo {membership.orgName}</p>
+            <button
+              type="button"
+              className="underline"
+              onClick={() => void stopImpersonation().then(() => window.location.assign("/super"))}
+            >
+              Volver al panel
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {billing?.status === "due" ? (
         <div className="border-b border-warn/25 bg-warn-soft text-ink no-print">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm">
@@ -149,7 +167,7 @@ export function AppShell({
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-card/95 backdrop-blur md:hidden no-print">
         <div className={cn("mx-auto grid max-w-lg px-1 pb-[env(safe-area-inset-bottom)]", cols)}>
-          {nav.map((item) => {
+          {mobileNav.map((item) => {
             const active = item.match(path);
             return (
               <Link

@@ -43,13 +43,17 @@ export function Protected({ children }: { children: ReactNode }) {
 
   const developer = Boolean(session.data?.developer);
   const membership = session.data?.membership;
+  const impersonating = Boolean(session.data?.impersonating);
 
-  if (developer && (path === "/autorizar" || !membership)) {
-    if (path !== "/autorizar") return <Navigate to="/autorizar" />;
+  if (developer && (path.startsWith("/super") || path === "/autorizar")) {
     return <>{children}</>;
+  }
+  if (developer && !impersonating) {
+    return <Navigate to="/super" />;
   }
 
   if (!membership) return <Navigate to="/onboarding" />;
+  if (membership.blocked) return <BlockedAccount name={membership.orgName} />;
   if (!membership.authorized) return <PendingAuth name={membership.orgName} />;
 
   const billing = session.data?.billing;
@@ -62,9 +66,33 @@ export function Protected({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AppShell membership={membership} billing={billing ?? null}>
+    <AppShell membership={membership} billing={billing ?? null} impersonating={impersonating}>
       {children}
     </AppShell>
+  );
+}
+
+function BlockedAccount({ name }: { name: string }) {
+  const [out, setOut] = useState(false);
+  return (
+    <main className="grid min-h-dvh place-items-center bg-paper px-5">
+      <div className="w-full max-w-md space-y-4 rounded-lg border border-line bg-card p-6 shadow-card">
+        <Wordmark />
+        <h1 className="font-display text-3xl tracking-wide text-navy">{name}</h1>
+        <p className="text-sm text-steel">Esta cuenta está bloqueada. Pida al administrador o a soporte de INSPECTAMX que la reactive.</p>
+        <Button
+          variant="secondary"
+          className="w-full"
+          disabled={out}
+          onClick={() => {
+            setOut(true);
+            void signOut("/login").catch(() => setOut(false));
+          }}
+        >
+          Cerrar sesión
+        </Button>
+      </div>
+    </main>
   );
 }
 

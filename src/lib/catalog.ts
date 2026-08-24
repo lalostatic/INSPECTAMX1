@@ -1,5 +1,6 @@
 export const APP_NAME = "INSPECTAMX";
-export const APP_TAGLINE = "Operación de patio";
+export const APP_TAGLINE =
+  "Crea, ejecuta, supervisa y documenta cualquier proceso de inspección desde un solo lugar.";
 /** Dominio de producción. MODIFICAR si cambia el hosting. */
 export const APP_DOMAIN = "inspectamx.com";
 export const APP_URL = "https://inspectamx.com";
@@ -58,7 +59,7 @@ export const REPAIRS = [
 export const TREATMENTS = ["Acond.", "Pintura táctica", "Lavado", "Solo registro"] as const;
 export const MATERIAL_UNITS = ["LTS", "PZ", "KG", "M", "GAL"] as const;
 
-export type Role = "admin" | "office" | "inspector" | "repair" | "painter" | "supervisor";
+export type Role = "admin" | "office" | "inspector" | "repair" | "painter" | "supervisor" | "consulta";
 
 export const ROLE_LABEL: Record<Role, string> = {
   admin: "Administrador",
@@ -67,12 +68,21 @@ export const ROLE_LABEL: Record<Role, string> = {
   repair: "Taller M&R",
   painter: "Pintura",
   supervisor: "Supervisor",
+  consulta: "Consulta",
 };
 
-export const ALL_ROLES: Role[] = ["admin", "office", "inspector", "repair", "painter", "supervisor"];
+export const ALL_ROLES: Role[] = ["admin", "office", "inspector", "repair", "painter", "supervisor", "consulta"];
 
 export function asRole(r: string): Role {
-  if (r === "office" || r === "admin" || r === "inspector" || r === "repair" || r === "painter" || r === "supervisor") {
+  if (
+    r === "office" ||
+    r === "admin" ||
+    r === "inspector" ||
+    r === "repair" ||
+    r === "painter" ||
+    r === "supervisor" ||
+    r === "consulta"
+  ) {
     return r;
   }
   return "inspector";
@@ -89,9 +99,9 @@ export const MODULES: {
 }[] = [
   {
     key: "inspeccion",
-    label: "Inspección de patio",
+    label: "Inspecciones y auditorías",
     short: "Inspección",
-    blurb: "Número de unidad, mapa y foto. El daño es opcional.",
+    blurb: "Plantillas, formularios, evidencias y folios de esta empresa.",
   },
   {
     key: "mr",

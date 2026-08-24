@@ -14,8 +14,9 @@ import { z } from "zod";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { normalizeContainer } from "@/lib/iso6346";
-import { canArchiveInspection, canCreateInspection } from "@/lib/roles";
+import { canArchiveInspection, canCreateInspection, canViewLiveFolios } from "@/lib/roles";
 import type { Finding, InspectionDetail, InspectionListItem } from "@/lib/types";
+import { logPlatform } from "@/lib/server/platform";
 import { requireMembership } from "@/lib/server/tenant";
 import { tenantTables, type TenantTables } from "@/lib/server/tenant-schema";
 
@@ -216,6 +217,7 @@ export const createInspection = createServerFn({ method: "POST" })
       }
       fi += 1;
     }
+    await logPlatform("photo", `Inspección ${container}`, { orgId: m.orgId });
     return { id };
   });
 
@@ -242,6 +244,21 @@ export const restoreInspection = createServerFn({ method: "POST" })
     const sql = await getSql();
     await sql.query(`update ${T.inspections} set archived_at = null where id = $1`, [data.id]);
     return { ok: true };
+  });
+
+export const listLiveFolios = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<InspectionListItem[]> => {
+    const m = await requireMembership(context.userId);
+    if (!canViewLiveFolios(m.role)) return [];
+    const T = tenantTables(m.dbSchema);
+    const sql = await getSql();
+    const rows = await sql.query<HeadRow>(
+      `${listSql(T)}
+       where i.archived_at is null
+       order by i.inspected_at desc limit 20`,
+    );
+    return rows.map(mapList);
   });
 
 export const listArchivedInspections = createServerFn({ method: "GET" })

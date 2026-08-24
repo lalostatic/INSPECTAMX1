@@ -20,6 +20,7 @@ const PUBLIC_DOMAINS = new Set([
   "gmx.com",
   "mail.com",
   "inspecta.mx",
+  "inspectamx.com",
 ]);
 
 const LOCAL_ROLE: Record<string, Role> = {
@@ -35,6 +36,7 @@ const LOCAL_ROLE: Record<string, Role> = {
   painter: "painter",
   almacen: "painter",
   supervisor: "supervisor",
+  consulta: "consulta",
 };
 
 export function parseEmail(raw: string | null | undefined): { local: string; domain: string } | null {

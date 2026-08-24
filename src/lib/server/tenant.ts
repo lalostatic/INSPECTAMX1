@@ -27,6 +27,7 @@ type OrgRow = {
   user_id: string;
   display_name: string;
   role: string;
+  blocked: boolean;
 };
 
 function mapModules(rows: { module_key: string; enabled: boolean }[]): Record<ModuleKey, boolean> {
@@ -51,7 +52,7 @@ async function findMembership(userId: string): Promise<Membership | null> {
   const sql = await getSql();
   const rows = await sql<OrgRow>`
     select m.org_id, o.name, o.depot, o.city, o.slug, o.invite_code, o.email_domain, o.authorized,
-           o.db_schema, m.user_id, m.display_name, m.role
+           o.db_schema, m.user_id, m.display_name, m.role, coalesce(m.blocked, false) as blocked
     from org_members m
     join organizations o on o.id = m.org_id
     where m.user_id = ${userId}
@@ -76,6 +77,7 @@ async function findMembership(userId: string): Promise<Membership | null> {
     userId: r.user_id,
     displayName: r.display_name,
     role: asRole(r.role),
+    blocked: Boolean(r.blocked),
     modules: mapModules(mods),
   };
 }
@@ -125,6 +127,51 @@ async function attachByEmailDomain(userId: string): Promise<Membership | null> {
 }
 
 async function loadMembership(userId: string): Promise<Membership | null> {
+  const user = await userRecord(userId);
+  if (user && isDeveloperEmail(user.email)) {
+    const sql = await getSql();
+    const imp = await sql<{ org_id: string }>`
+      select org_id from impersonation where developer_user_id = ${userId} limit 1
+    `;
+    if (imp[0]) {
+      const org = await sql<{
+        org_id: string;
+        name: string;
+        depot: string;
+        city: string;
+        slug: string;
+        invite_code: string;
+        email_domain: string | null;
+        authorized: boolean;
+        db_schema: string | null;
+      }>`
+        select id as org_id, name, depot, city, slug, invite_code, email_domain, authorized, db_schema
+        from organizations where id = ${imp[0].org_id} limit 1
+      `;
+      const r = org[0];
+      if (r) {
+        const mods = await sql<{ module_key: string; enabled: boolean }>`
+          select module_key, enabled from org_modules where org_id = ${r.org_id}
+        `;
+        return {
+          orgId: r.org_id,
+          orgName: r.name,
+          depot: r.depot,
+          city: r.city,
+          slug: r.slug,
+          inviteCode: r.invite_code,
+          emailDomain: r.email_domain ?? "",
+          authorized: true,
+          dbSchema: r.db_schema || schemaNameFromOrgId(r.org_id),
+          userId,
+          displayName: "Soporte INSPECTAMX",
+          role: "admin",
+          blocked: false,
+          modules: mapModules(mods),
+        };
+      }
+    }
+  }
   const existing = await findMembership(userId);
   if (existing) return existing;
   return attachByEmailDomain(userId);
@@ -133,6 +180,7 @@ async function loadMembership(userId: string): Promise<Membership | null> {
 export async function requireMembership(userId: string): Promise<Membership> {
   const m = await loadMembership(userId);
   if (!m) throw new Error("Sin empresa asignada");
+  if (m.blocked) throw new Error("Esta cuenta está bloqueada.");
   if (!m.authorized) throw new Error("Este patio aún no está autorizado por el desarrollador.");
   const dbSchema = await ensureOrgTenant(m.orgId);
   await assertOrgNotSuspended(m.orgId);
@@ -144,6 +192,7 @@ export const getSession = createServerFn({ method: "GET" })
   .handler(async ({ context }): Promise<SessionPayload> => {
     const user = await userRecord(context.userId);
     const membership = await loadMembership(context.userId);
+    const developer = isDeveloperEmail(user?.email);
     if (membership?.authorized) {
       membership.dbSchema = await ensureOrgTenant(membership.orgId);
     }
@@ -151,7 +200,8 @@ export const getSession = createServerFn({ method: "GET" })
     return {
       userId: context.userId,
       email: user?.email ?? "",
-      developer: isDeveloperEmail(user?.email),
+      developer,
+      impersonating: Boolean(developer && membership),
       membership,
       billing,
     };
@@ -209,7 +259,7 @@ export const listTeam = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<TeamMember[]> => {
     const m = await requireMembership(context.userId);
-    if (m.role !== "admin") throw new Error("Solo el administrador ve el equipo");
+    if (m.role !== "admin" && m.role !== "supervisor" && m.role !== "office") throw new Error("Sin permiso para ver el equipo");
     const sql = await getSql();
     const rows = await sql<{
       user_id: string;

@@ -16,6 +16,7 @@ export type Membership = {
   userId: string;
   displayName: string;
   role: Role;
+  blocked: boolean;
   modules: Record<ModuleKey, boolean>;
 };
 
@@ -23,6 +24,7 @@ export type SessionPayload = {
   userId: string;
   email: string;
   developer: boolean;
+  impersonating: boolean;
   membership: Membership | null;
   billing: BillingSnapshot | null;
 };

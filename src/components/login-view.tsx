@@ -6,6 +6,12 @@
  *    No hay registro público. Entra en /login con ese correo.
  *    El dominio del correo (admin@empresa.mx) lo ata a SU patio.
  *
+ * Cuentas de demostración (contraseña Muelle2026):
+ *   Superadmin: desarrollo@inspectamx.com  y  desarrolo@inspectamx.com
+ *   Cerlan (activa): admin@cerlan.mx, oficina@, inspector@, taller@, pintura@, supervisor@, consulta@
+ *   Contri (vencida): igual con @contri.mx
+ *   Istmo (prueba): igual con @istmo.mx
+ *
  * MODIFICAR: DEV_WHATSAPP para el contacto de soporte.
  */
 import { useState, type FormEvent } from "react";
@@ -75,6 +81,9 @@ export function LoginView() {
 
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col justify-center px-5 py-10 pb-28">
         <Wordmark light />
+        <p className="mt-4 max-w-sm text-sm leading-relaxed text-paper/85">
+          Crea, ejecuta, supervisa y documenta cualquier proceso de inspección desde un solo lugar.
+        </p>
 
         <form
           onSubmit={(e) => void onSubmit(e)}

@@ -13,6 +13,20 @@ const TABLES = [
   "warehouse_units",
   "smtp_settings",
   "backup_events",
+  "branches",
+  "assets",
+  "templates",
+  "template_fields",
+  "template_statuses",
+  "incident_types",
+  "records",
+  "record_answers",
+  "record_incidents",
+  "record_evidence",
+  "record_events",
+  "assignments",
+  "automations",
+  "dashboard_prefs",
 ] as const;
 
 export type TenantTable = (typeof TABLES)[number];

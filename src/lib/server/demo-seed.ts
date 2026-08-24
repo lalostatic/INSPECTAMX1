@@ -1,17 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
 import { DEMO_ORGS, DEMO_PASSWORD, demoEmail, type DemoOrg } from "@/lib/demo-accounts";
-import { DEVELOPER_EMAIL } from "@/lib/developer";
+import { DEVELOPER_EMAIL, DEVELOPER_EMAILS } from "@/lib/developer";
 import { addDays, addMonths } from "@/lib/billing";
 import { MODULES, type Role } from "@/lib/catalog";
 import { getSql } from "@/lib/db";
 import { createCredentialUser } from "@/lib/server/accounts";
-import { setOrgPeriod, stampNewOrgBilling } from "@/lib/server/billing";
+import { stampNewOrgBilling } from "@/lib/server/billing";
 import { seedOrgIfEmpty } from "@/lib/server/seed";
+import { seedEngine } from "@/lib/server/seed-engine";
 import { ensureAllTenants, ensureOrgTenant, schemaNameFromOrgId } from "@/lib/server/tenant-schema";
 import { todayISO } from "@/lib/utils";
 
 const globalRef = globalThis as typeof globalThis & {
-  __inspectaDemoSeed__?: Promise<void>;
+  __inspectamxDemoSeed_v2__?: Promise<void>;
 };
 
 async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string> {
@@ -32,7 +33,18 @@ async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string>
           invite_code = ${org.inviteCode},
           authorized = ${true},
           authorized_by = coalesce(nullif(authorized_by, ''), ${"seed"}),
-          db_schema = coalesce(nullif(db_schema, ''), ${schemaNameFromOrgId(found[0].id)})
+          db_schema = coalesce(nullif(db_schema, ''), ${schemaNameFromOrgId(found[0].id)}),
+          status = ${org.status},
+          plan = ${org.plan},
+          legal_name = ${org.legalName},
+          rfc = ${org.rfc},
+          phone = ${org.phone},
+          address = ${org.address},
+          contact_email = ${"admin@" + org.domain},
+          contact_name = ${org.accounts[0]?.name ?? "Admin"},
+          max_users = ${org.maxUsers},
+          max_inspectors = ${org.maxInspectors},
+          storage_mb = ${org.storageMb}
       where id = ${found[0].id}
     `;
     for (const mod of MODULES) {
@@ -80,7 +92,14 @@ async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string>
 async function applyDemoBilling(orgId: string, billing: "active" | "due") {
   const today = todayISO();
   const periodEnd = billing === "due" ? addDays(today, -1) : addMonths(today, 1);
-  await setOrgPeriod(orgId, periodEnd);
+  const sql = await getSql();
+  const start = addMonths(periodEnd, -1);
+  await sql`
+    update organizations
+    set period_start = ${start},
+        period_end = ${periodEnd}
+    where id = ${orgId}
+  `;
   await stampNewOrgBilling(orgId);
 }
 
@@ -94,14 +113,60 @@ async function ensureMember(orgId: string, userId: string, name: string, role: R
   `;
 }
 
+async function seedPlatformSamples(orgIds: { id: string; name: string }[]) {
+  const sql = await getSql();
+  const [tk] = await sql<{ c: number }>`select count(*)::int as c from support_tickets`;
+  if ((tk?.c ?? 0) === 0 && orgIds[0]) {
+    await sql`
+      insert into support_tickets (id, org_id, priority, status, title, body)
+      values
+        (${crypto.randomUUID()}, ${orgIds[0].id}, ${"alta"}, ${"abierto"},
+         ${"Inspector no puede subir fotografías"},
+         ${"Luis Mora reporta que la cámara del mapa no abre en el celular."}),
+        (${crypto.randomUUID()}, ${orgIds[1]?.id ?? orgIds[0].id}, ${"media"}, ${"abierto"},
+         ${"Renovación de plan mensual"},
+         ${"Quieren pasar de prueba a mensual y ampliar inspectores."})
+    `;
+  }
+  const [er] = await sql<{ c: number }>`select count(*)::int as c from platform_errors`;
+  if ((er?.c ?? 0) === 0) {
+    await sql`
+      insert into platform_errors (id, status, source, message, org_id)
+      values
+        (${crypto.randomUUID()}, ${"nuevo"}, ${"fotos"}, ${"JPEG rechazado: archivo mayor a 8 MB"}, ${orgIds[0]?.id ?? null}),
+        (${crypto.randomUUID()}, ${"investigacion"}, ${"smtp"}, ${"Fallo de envío SMTP en un patio de prueba"}, ${orgIds[2]?.id ?? null})
+    `;
+  }
+  const [nt] = await sql<{ c: number }>`select count(*)::int as c from platform_notices`;
+  if ((nt?.c ?? 0) === 0) {
+    await sql`
+      insert into platform_notices (id, scope, title, body, active)
+      values (
+        ${crypto.randomUUID()}, ${"global"},
+        ${"Mantenimiento programado"},
+        ${"Domingo 02:00 AM — ventana de 20 minutos. Los patios siguen operando en lectura."},
+        ${true}
+      )
+    `;
+  }
+  await sql.query(
+    `insert into platform_logs (id, kind, org_id, user_email, message) values ($1,$2,$3,$4,$5)`,
+    [crypto.randomUUID(), "login", null, DEVELOPER_EMAIL, "Semilla de demostración lista"],
+  );
+}
+
 export async function seedDemoAccounts() {
-  if (!globalRef.__inspectaDemoSeed__) {
-    globalRef.__inspectaDemoSeed__ = (async () => {
-      await createCredentialUser({
-        name: "Desarrollador INSPECTAMX",
-        email: DEVELOPER_EMAIL,
-        password: DEMO_PASSWORD,
-      });
+  if (!globalRef.__inspectamxDemoSeed_v2__) {
+    globalRef.__inspectamxDemoSeed_v2__ = (async () => {
+      for (const email of DEVELOPER_EMAILS) {
+        await createCredentialUser({
+          name: "Desarrollador INSPECTAMX",
+          email,
+          password: DEMO_PASSWORD,
+        });
+      }
+      const sql = await getSql();
+      const orgIds: { id: string; name: string }[] = [];
       for (const org of DEMO_ORGS) {
         const ids = new Map<string, string>();
         for (const account of org.accounts) {
@@ -117,6 +182,23 @@ export async function seedDemoAccounts() {
         const adminId = ids.get(adminEmail);
         if (!adminId) throw new Error(`No se pudo crear el administrador de ${org.name}`);
         const orgId = await ensureDemoOrg(org, adminId);
+        orgIds.push({ id: orgId, name: org.name });
+        await sql`
+          update organizations
+          set status = ${org.status},
+              plan = ${org.plan},
+              legal_name = ${org.legalName},
+              rfc = ${org.rfc},
+              phone = ${org.phone},
+              address = ${org.address},
+              contact_email = ${`admin@${org.domain}`},
+              contact_name = ${org.accounts[0]?.name ?? "Admin"},
+              city = ${org.city},
+              max_users = ${org.maxUsers},
+              max_inspectors = ${org.maxInspectors},
+              storage_mb = ${org.storageMb}
+          where id = ${orgId}
+        `;
         await applyDemoBilling(orgId, org.billing);
         await ensureOrgTenant(orgId);
         for (const account of org.accounts) {
@@ -129,23 +211,40 @@ export async function seedDemoAccounts() {
         const inspectorId = ids.get(inspectorEmail) ?? adminId;
         const inspectorName = org.accounts.find((a) => a.local === "inspector")?.name ?? "Inspector";
         await seedOrgIfEmpty(orgId, inspectorId, inspectorName, org.sample);
+        const pack = org.slug === "contri" || org.slug === "istmo" ? org.slug : "cerlan";
+        await seedEngine(orgId, pack, inspectorId, inspectorName);
       }
       await ensureAllTenants();
+      await seedPlatformSamples(orgIds);
     })().catch((err) => {
-      globalRef.__inspectaDemoSeed__ = undefined;
+      globalRef.__inspectamxDemoSeed_v2__ = undefined;
       throw err;
     });
   }
-  await globalRef.__inspectaDemoSeed__;
+  await globalRef.__inspectamxDemoSeed_v2__;
+}
+
+async function seedEnginesForExistingOrgs() {
+  const sql = await getSql();
+  const orgs = await sql<{ id: string; slug: string }>`select id, slug from organizations`;
+  for (const o of orgs) {
+    const pack = o.slug === "contri" || o.slug === "istmo" ? o.slug : "cerlan";
+    const [mem] = await sql<{ user_id: string; display_name: string }>`
+      select user_id, display_name from org_members where org_id = ${o.id} and role = ${"inspector"} limit 1
+    `;
+    if (!mem) continue;
+    await seedEngine(o.id, pack, mem.user_id, mem.display_name);
+  }
 }
 
 /** Public, unauthenticated — runs when the login page loads. */
 export const ensureDemoUsers = createServerFn({ method: "GET" }).handler(async () => {
   try {
     await seedDemoAccounts();
+    await seedEnginesForExistingOrgs();
     return { ok: true };
   } catch (err) {
-    console.error("[inspecta] demo seed failed", err);
+    console.error("[inspectamx] demo seed failed", err);
     return { ok: false };
   }
 });

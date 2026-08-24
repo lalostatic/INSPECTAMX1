@@ -10,25 +10,54 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ActivosRouteImport } from './routes/activos'
 import { Route as AlmacenRouteImport } from './routes/almacen'
+import { Route as AutomatizacionesRouteImport } from './routes/automatizaciones'
 import { Route as AutorizarRouteImport } from './routes/autorizar'
+import { Route as BuscarRouteImport } from './routes/buscar'
 import { Route as ConfiguracionRouteImport } from './routes/configuracion'
 import { Route as EquipoRouteImport } from './routes/equipo'
+import { Route as IncidenciasRouteImport } from './routes/incidencias'
 import { Route as InspeccionesRouteImport } from './routes/inspecciones'
+import { Route as LevantarRouteImport } from './routes/levantar'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MrRouteImport } from './routes/mr'
 import { Route as NuevaRouteImport } from './routes/nueva'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PagoRouteImport } from './routes/pago'
+import { Route as PlantillasRouteImport } from './routes/plantillas'
+import { Route as RegistrosRouteImport } from './routes/registros'
 import { Route as ReportesRouteImport } from './routes/reportes'
+import { Route as SucursalesRouteImport } from './routes/sucursales'
+import { Route as SuperRouteImport } from './routes/super'
+import { Route as TareasRouteImport } from './routes/tareas'
 import { Route as AlmacenIndexRouteImport } from './routes/almacen.index'
 import { Route as AlmacenIdRouteImport } from './routes/almacen.$id'
 import { Route as AlmacenNuevoRouteImport } from './routes/almacen.nuevo'
 import { Route as InspeccionesIndexRouteImport } from './routes/inspecciones.index'
 import { Route as InspeccionesIdRouteImport } from './routes/inspecciones.$id'
+import { Route as LevantarIndexRouteImport } from './routes/levantar.index'
+import { Route as LevantarTemplateIdRouteImport } from './routes/levantar.$templateId'
 import { Route as MrIndexRouteImport } from './routes/mr.index'
 import { Route as MrIdRouteImport } from './routes/mr.$id'
 import { Route as MrNuevoRouteImport } from './routes/mr.nuevo'
+import { Route as PlantillasIndexRouteImport } from './routes/plantillas.index'
+import { Route as PlantillasIdRouteImport } from './routes/plantillas.$id'
+import { Route as RegistrosIndexRouteImport } from './routes/registros.index'
+import { Route as RegistrosIdRouteImport } from './routes/registros.$id'
+import { Route as SuperIndexRouteImport } from './routes/super.index'
+import { Route as SuperAnalyticsRouteImport } from './routes/super.analytics'
+import { Route as SuperAvisosRouteImport } from './routes/super.avisos'
+import { Route as SuperBackupsRouteImport } from './routes/super.backups'
+import { Route as SuperCatalogosRouteImport } from './routes/super.catalogos'
+import { Route as SuperConfiguracionRouteImport } from './routes/super.configuracion'
+import { Route as SuperDesarrolloRouteImport } from './routes/super.desarrollo'
+import { Route as SuperEmpresasRouteImport } from './routes/super.empresas'
+import { Route as SuperIntegracionesRouteImport } from './routes/super.integraciones'
+import { Route as SuperSeguridadRouteImport } from './routes/super.seguridad'
+import { Route as SuperSistemaRouteImport } from './routes/super.sistema'
+import { Route as SuperSoporteRouteImport } from './routes/super.soporte'
+import { Route as SuperUsuariosRouteImport } from './routes/super.usuarios'
 import { Route as UnidadNoRouteImport } from './routes/unidad.$no'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
@@ -37,14 +66,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ActivosRoute = ActivosRouteImport.update({
+  id: '/activos',
+  path: '/activos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AlmacenRoute = AlmacenRouteImport.update({
   id: '/almacen',
   path: '/almacen',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AutomatizacionesRoute = AutomatizacionesRouteImport.update({
+  id: '/automatizaciones',
+  path: '/automatizaciones',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AutorizarRoute = AutorizarRouteImport.update({
   id: '/autorizar',
   path: '/autorizar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuscarRoute = BuscarRouteImport.update({
+  id: '/buscar',
+  path: '/buscar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConfiguracionRoute = ConfiguracionRouteImport.update({
@@ -57,9 +101,19 @@ const EquipoRoute = EquipoRouteImport.update({
   path: '/equipo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const IncidenciasRoute = IncidenciasRouteImport.update({
+  id: '/incidencias',
+  path: '/incidencias',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InspeccionesRoute = InspeccionesRouteImport.update({
   id: '/inspecciones',
   path: '/inspecciones',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LevantarRoute = LevantarRouteImport.update({
+  id: '/levantar',
+  path: '/levantar',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -87,9 +141,34 @@ const PagoRoute = PagoRouteImport.update({
   path: '/pago',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlantillasRoute = PlantillasRouteImport.update({
+  id: '/plantillas',
+  path: '/plantillas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistrosRoute = RegistrosRouteImport.update({
+  id: '/registros',
+  path: '/registros',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportesRoute = ReportesRouteImport.update({
   id: '/reportes',
   path: '/reportes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SucursalesRoute = SucursalesRouteImport.update({
+  id: '/sucursales',
+  path: '/sucursales',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperRoute = SuperRouteImport.update({
+  id: '/super',
+  path: '/super',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TareasRoute = TareasRouteImport.update({
+  id: '/tareas',
+  path: '/tareas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlmacenIndexRoute = AlmacenIndexRouteImport.update({
@@ -117,6 +196,16 @@ const InspeccionesIdRoute = InspeccionesIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => InspeccionesRoute,
 } as any)
+const LevantarIndexRoute = LevantarIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LevantarRoute,
+} as any)
+const LevantarTemplateIdRoute = LevantarTemplateIdRouteImport.update({
+  id: '/$templateId',
+  path: '/$templateId',
+  getParentRoute: () => LevantarRoute,
+} as any)
 const MrIndexRoute = MrIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -132,6 +221,91 @@ const MrNuevoRoute = MrNuevoRouteImport.update({
   path: '/nuevo',
   getParentRoute: () => MrRoute,
 } as any)
+const PlantillasIndexRoute = PlantillasIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PlantillasRoute,
+} as any)
+const PlantillasIdRoute = PlantillasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PlantillasRoute,
+} as any)
+const RegistrosIndexRoute = RegistrosIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RegistrosRoute,
+} as any)
+const RegistrosIdRoute = RegistrosIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => RegistrosRoute,
+} as any)
+const SuperIndexRoute = SuperIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperAnalyticsRoute = SuperAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperAvisosRoute = SuperAvisosRouteImport.update({
+  id: '/avisos',
+  path: '/avisos',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperBackupsRoute = SuperBackupsRouteImport.update({
+  id: '/backups',
+  path: '/backups',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperCatalogosRoute = SuperCatalogosRouteImport.update({
+  id: '/catalogos',
+  path: '/catalogos',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperConfiguracionRoute = SuperConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperDesarrolloRoute = SuperDesarrolloRouteImport.update({
+  id: '/desarrollo',
+  path: '/desarrollo',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperEmpresasRoute = SuperEmpresasRouteImport.update({
+  id: '/empresas',
+  path: '/empresas',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperIntegracionesRoute = SuperIntegracionesRouteImport.update({
+  id: '/integraciones',
+  path: '/integraciones',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperSeguridadRoute = SuperSeguridadRouteImport.update({
+  id: '/seguridad',
+  path: '/seguridad',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperSistemaRoute = SuperSistemaRouteImport.update({
+  id: '/sistema',
+  path: '/sistema',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperSoporteRoute = SuperSoporteRouteImport.update({
+  id: '/soporte',
+  path: '/soporte',
+  getParentRoute: () => SuperRoute,
+} as any)
+const SuperUsuariosRoute = SuperUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => SuperRoute,
+} as any)
 const UnidadNoRoute = UnidadNoRouteImport.update({
   id: '/unidad/$no',
   path: '/unidad/$no',
@@ -145,159 +319,335 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/activos': typeof ActivosRoute
   '/almacen': typeof AlmacenRouteWithChildren
+  '/automatizaciones': typeof AutomatizacionesRoute
   '/autorizar': typeof AutorizarRoute
+  '/buscar': typeof BuscarRoute
   '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
+  '/incidencias': typeof IncidenciasRoute
   '/inspecciones': typeof InspeccionesRouteWithChildren
+  '/levantar': typeof LevantarRouteWithChildren
   '/login': typeof LoginRoute
   '/mr': typeof MrRouteWithChildren
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
+  '/plantillas': typeof PlantillasRouteWithChildren
+  '/registros': typeof RegistrosRouteWithChildren
   '/reportes': typeof ReportesRoute
+  '/sucursales': typeof SucursalesRoute
+  '/super': typeof SuperRouteWithChildren
+  '/tareas': typeof TareasRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
+  '/levantar/$templateId': typeof LevantarTemplateIdRoute
   '/mr/$id': typeof MrIdRoute
   '/mr/nuevo': typeof MrNuevoRoute
+  '/plantillas/$id': typeof PlantillasIdRoute
+  '/registros/$id': typeof RegistrosIdRoute
+  '/super/analytics': typeof SuperAnalyticsRoute
+  '/super/avisos': typeof SuperAvisosRoute
+  '/super/backups': typeof SuperBackupsRoute
+  '/super/catalogos': typeof SuperCatalogosRoute
+  '/super/configuracion': typeof SuperConfiguracionRoute
+  '/super/desarrollo': typeof SuperDesarrolloRoute
+  '/super/empresas': typeof SuperEmpresasRoute
+  '/super/integraciones': typeof SuperIntegracionesRoute
+  '/super/seguridad': typeof SuperSeguridadRoute
+  '/super/sistema': typeof SuperSistemaRoute
+  '/super/soporte': typeof SuperSoporteRoute
+  '/super/usuarios': typeof SuperUsuariosRoute
   '/unidad/$no': typeof UnidadNoRoute
   '/almacen/': typeof AlmacenIndexRoute
   '/inspecciones/': typeof InspeccionesIndexRoute
+  '/levantar/': typeof LevantarIndexRoute
   '/mr/': typeof MrIndexRoute
+  '/plantillas/': typeof PlantillasIndexRoute
+  '/registros/': typeof RegistrosIndexRoute
+  '/super/': typeof SuperIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/activos': typeof ActivosRoute
+  '/automatizaciones': typeof AutomatizacionesRoute
   '/autorizar': typeof AutorizarRoute
+  '/buscar': typeof BuscarRoute
   '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
+  '/incidencias': typeof IncidenciasRoute
   '/login': typeof LoginRoute
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
   '/reportes': typeof ReportesRoute
+  '/sucursales': typeof SucursalesRoute
+  '/tareas': typeof TareasRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
+  '/levantar/$templateId': typeof LevantarTemplateIdRoute
   '/mr/$id': typeof MrIdRoute
   '/mr/nuevo': typeof MrNuevoRoute
+  '/plantillas/$id': typeof PlantillasIdRoute
+  '/registros/$id': typeof RegistrosIdRoute
+  '/super/analytics': typeof SuperAnalyticsRoute
+  '/super/avisos': typeof SuperAvisosRoute
+  '/super/backups': typeof SuperBackupsRoute
+  '/super/catalogos': typeof SuperCatalogosRoute
+  '/super/configuracion': typeof SuperConfiguracionRoute
+  '/super/desarrollo': typeof SuperDesarrolloRoute
+  '/super/empresas': typeof SuperEmpresasRoute
+  '/super/integraciones': typeof SuperIntegracionesRoute
+  '/super/seguridad': typeof SuperSeguridadRoute
+  '/super/sistema': typeof SuperSistemaRoute
+  '/super/soporte': typeof SuperSoporteRoute
+  '/super/usuarios': typeof SuperUsuariosRoute
   '/unidad/$no': typeof UnidadNoRoute
   '/almacen': typeof AlmacenIndexRoute
   '/inspecciones': typeof InspeccionesIndexRoute
+  '/levantar': typeof LevantarIndexRoute
   '/mr': typeof MrIndexRoute
+  '/plantillas': typeof PlantillasIndexRoute
+  '/registros': typeof RegistrosIndexRoute
+  '/super': typeof SuperIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/activos': typeof ActivosRoute
   '/almacen': typeof AlmacenRouteWithChildren
+  '/automatizaciones': typeof AutomatizacionesRoute
   '/autorizar': typeof AutorizarRoute
+  '/buscar': typeof BuscarRoute
   '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
+  '/incidencias': typeof IncidenciasRoute
   '/inspecciones': typeof InspeccionesRouteWithChildren
+  '/levantar': typeof LevantarRouteWithChildren
   '/login': typeof LoginRoute
   '/mr': typeof MrRouteWithChildren
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
+  '/plantillas': typeof PlantillasRouteWithChildren
+  '/registros': typeof RegistrosRouteWithChildren
   '/reportes': typeof ReportesRoute
+  '/sucursales': typeof SucursalesRoute
+  '/super': typeof SuperRouteWithChildren
+  '/tareas': typeof TareasRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
+  '/levantar/$templateId': typeof LevantarTemplateIdRoute
   '/mr/$id': typeof MrIdRoute
   '/mr/nuevo': typeof MrNuevoRoute
+  '/plantillas/$id': typeof PlantillasIdRoute
+  '/registros/$id': typeof RegistrosIdRoute
+  '/super/analytics': typeof SuperAnalyticsRoute
+  '/super/avisos': typeof SuperAvisosRoute
+  '/super/backups': typeof SuperBackupsRoute
+  '/super/catalogos': typeof SuperCatalogosRoute
+  '/super/configuracion': typeof SuperConfiguracionRoute
+  '/super/desarrollo': typeof SuperDesarrolloRoute
+  '/super/empresas': typeof SuperEmpresasRoute
+  '/super/integraciones': typeof SuperIntegracionesRoute
+  '/super/seguridad': typeof SuperSeguridadRoute
+  '/super/sistema': typeof SuperSistemaRoute
+  '/super/soporte': typeof SuperSoporteRoute
+  '/super/usuarios': typeof SuperUsuariosRoute
   '/unidad/$no': typeof UnidadNoRoute
   '/almacen/': typeof AlmacenIndexRoute
   '/inspecciones/': typeof InspeccionesIndexRoute
+  '/levantar/': typeof LevantarIndexRoute
   '/mr/': typeof MrIndexRoute
+  '/plantillas/': typeof PlantillasIndexRoute
+  '/registros/': typeof RegistrosIndexRoute
+  '/super/': typeof SuperIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/activos'
     | '/almacen'
+    | '/automatizaciones'
     | '/autorizar'
+    | '/buscar'
     | '/configuracion'
     | '/equipo'
+    | '/incidencias'
     | '/inspecciones'
+    | '/levantar'
     | '/login'
     | '/mr'
     | '/nueva'
     | '/onboarding'
     | '/pago'
+    | '/plantillas'
+    | '/registros'
     | '/reportes'
+    | '/sucursales'
+    | '/super'
+    | '/tareas'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
+    | '/levantar/$templateId'
     | '/mr/$id'
     | '/mr/nuevo'
+    | '/plantillas/$id'
+    | '/registros/$id'
+    | '/super/analytics'
+    | '/super/avisos'
+    | '/super/backups'
+    | '/super/catalogos'
+    | '/super/configuracion'
+    | '/super/desarrollo'
+    | '/super/empresas'
+    | '/super/integraciones'
+    | '/super/seguridad'
+    | '/super/sistema'
+    | '/super/soporte'
+    | '/super/usuarios'
     | '/unidad/$no'
     | '/almacen/'
     | '/inspecciones/'
+    | '/levantar/'
     | '/mr/'
+    | '/plantillas/'
+    | '/registros/'
+    | '/super/'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/activos'
+    | '/automatizaciones'
     | '/autorizar'
+    | '/buscar'
     | '/configuracion'
     | '/equipo'
+    | '/incidencias'
     | '/login'
     | '/nueva'
     | '/onboarding'
     | '/pago'
     | '/reportes'
+    | '/sucursales'
+    | '/tareas'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
+    | '/levantar/$templateId'
     | '/mr/$id'
     | '/mr/nuevo'
+    | '/plantillas/$id'
+    | '/registros/$id'
+    | '/super/analytics'
+    | '/super/avisos'
+    | '/super/backups'
+    | '/super/catalogos'
+    | '/super/configuracion'
+    | '/super/desarrollo'
+    | '/super/empresas'
+    | '/super/integraciones'
+    | '/super/seguridad'
+    | '/super/sistema'
+    | '/super/soporte'
+    | '/super/usuarios'
     | '/unidad/$no'
     | '/almacen'
     | '/inspecciones'
+    | '/levantar'
     | '/mr'
+    | '/plantillas'
+    | '/registros'
+    | '/super'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
+    | '/activos'
     | '/almacen'
+    | '/automatizaciones'
     | '/autorizar'
+    | '/buscar'
     | '/configuracion'
     | '/equipo'
+    | '/incidencias'
     | '/inspecciones'
+    | '/levantar'
     | '/login'
     | '/mr'
     | '/nueva'
     | '/onboarding'
     | '/pago'
+    | '/plantillas'
+    | '/registros'
     | '/reportes'
+    | '/sucursales'
+    | '/super'
+    | '/tareas'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
+    | '/levantar/$templateId'
     | '/mr/$id'
     | '/mr/nuevo'
+    | '/plantillas/$id'
+    | '/registros/$id'
+    | '/super/analytics'
+    | '/super/avisos'
+    | '/super/backups'
+    | '/super/catalogos'
+    | '/super/configuracion'
+    | '/super/desarrollo'
+    | '/super/empresas'
+    | '/super/integraciones'
+    | '/super/seguridad'
+    | '/super/sistema'
+    | '/super/soporte'
+    | '/super/usuarios'
     | '/unidad/$no'
     | '/almacen/'
     | '/inspecciones/'
+    | '/levantar/'
     | '/mr/'
+    | '/plantillas/'
+    | '/registros/'
+    | '/super/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ActivosRoute: typeof ActivosRoute
   AlmacenRoute: typeof AlmacenRouteWithChildren
+  AutomatizacionesRoute: typeof AutomatizacionesRoute
   AutorizarRoute: typeof AutorizarRoute
+  BuscarRoute: typeof BuscarRoute
   ConfiguracionRoute: typeof ConfiguracionRoute
   EquipoRoute: typeof EquipoRoute
+  IncidenciasRoute: typeof IncidenciasRoute
   InspeccionesRoute: typeof InspeccionesRouteWithChildren
+  LevantarRoute: typeof LevantarRouteWithChildren
   LoginRoute: typeof LoginRoute
   MrRoute: typeof MrRouteWithChildren
   NuevaRoute: typeof NuevaRoute
   OnboardingRoute: typeof OnboardingRoute
   PagoRoute: typeof PagoRoute
+  PlantillasRoute: typeof PlantillasRouteWithChildren
+  RegistrosRoute: typeof RegistrosRouteWithChildren
   ReportesRoute: typeof ReportesRoute
+  SucursalesRoute: typeof SucursalesRoute
+  SuperRoute: typeof SuperRouteWithChildren
+  TareasRoute: typeof TareasRoute
   UnidadNoRoute: typeof UnidadNoRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -311,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/activos': {
+      id: '/activos'
+      path: '/activos'
+      fullPath: '/activos'
+      preLoaderRoute: typeof ActivosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/almacen': {
       id: '/almacen'
       path: '/almacen'
@@ -318,11 +675,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlmacenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/automatizaciones': {
+      id: '/automatizaciones'
+      path: '/automatizaciones'
+      fullPath: '/automatizaciones'
+      preLoaderRoute: typeof AutomatizacionesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/autorizar': {
       id: '/autorizar'
       path: '/autorizar'
       fullPath: '/autorizar'
       preLoaderRoute: typeof AutorizarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/buscar': {
+      id: '/buscar'
+      path: '/buscar'
+      fullPath: '/buscar'
+      preLoaderRoute: typeof BuscarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/configuracion': {
@@ -339,11 +710,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EquipoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/incidencias': {
+      id: '/incidencias'
+      path: '/incidencias'
+      fullPath: '/incidencias'
+      preLoaderRoute: typeof IncidenciasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inspecciones': {
       id: '/inspecciones'
       path: '/inspecciones'
       fullPath: '/inspecciones'
       preLoaderRoute: typeof InspeccionesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/levantar': {
+      id: '/levantar'
+      path: '/levantar'
+      fullPath: '/levantar'
+      preLoaderRoute: typeof LevantarRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -381,11 +766,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PagoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/plantillas': {
+      id: '/plantillas'
+      path: '/plantillas'
+      fullPath: '/plantillas'
+      preLoaderRoute: typeof PlantillasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registros': {
+      id: '/registros'
+      path: '/registros'
+      fullPath: '/registros'
+      preLoaderRoute: typeof RegistrosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reportes': {
       id: '/reportes'
       path: '/reportes'
       fullPath: '/reportes'
       preLoaderRoute: typeof ReportesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sucursales': {
+      id: '/sucursales'
+      path: '/sucursales'
+      fullPath: '/sucursales'
+      preLoaderRoute: typeof SucursalesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/super': {
+      id: '/super'
+      path: '/super'
+      fullPath: '/super'
+      preLoaderRoute: typeof SuperRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tareas': {
+      id: '/tareas'
+      path: '/tareas'
+      fullPath: '/tareas'
+      preLoaderRoute: typeof TareasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/almacen/': {
@@ -423,6 +843,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InspeccionesIdRouteImport
       parentRoute: typeof InspeccionesRoute
     }
+    '/levantar/': {
+      id: '/levantar/'
+      path: '/'
+      fullPath: '/levantar/'
+      preLoaderRoute: typeof LevantarIndexRouteImport
+      parentRoute: typeof LevantarRoute
+    }
+    '/levantar/$templateId': {
+      id: '/levantar/$templateId'
+      path: '/$templateId'
+      fullPath: '/levantar/$templateId'
+      preLoaderRoute: typeof LevantarTemplateIdRouteImport
+      parentRoute: typeof LevantarRoute
+    }
     '/mr/': {
       id: '/mr/'
       path: '/'
@@ -443,6 +877,125 @@ declare module '@tanstack/react-router' {
       fullPath: '/mr/nuevo'
       preLoaderRoute: typeof MrNuevoRouteImport
       parentRoute: typeof MrRoute
+    }
+    '/plantillas/': {
+      id: '/plantillas/'
+      path: '/'
+      fullPath: '/plantillas/'
+      preLoaderRoute: typeof PlantillasIndexRouteImport
+      parentRoute: typeof PlantillasRoute
+    }
+    '/plantillas/$id': {
+      id: '/plantillas/$id'
+      path: '/$id'
+      fullPath: '/plantillas/$id'
+      preLoaderRoute: typeof PlantillasIdRouteImport
+      parentRoute: typeof PlantillasRoute
+    }
+    '/registros/': {
+      id: '/registros/'
+      path: '/'
+      fullPath: '/registros/'
+      preLoaderRoute: typeof RegistrosIndexRouteImport
+      parentRoute: typeof RegistrosRoute
+    }
+    '/registros/$id': {
+      id: '/registros/$id'
+      path: '/$id'
+      fullPath: '/registros/$id'
+      preLoaderRoute: typeof RegistrosIdRouteImport
+      parentRoute: typeof RegistrosRoute
+    }
+    '/super/': {
+      id: '/super/'
+      path: '/'
+      fullPath: '/super/'
+      preLoaderRoute: typeof SuperIndexRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/analytics': {
+      id: '/super/analytics'
+      path: '/analytics'
+      fullPath: '/super/analytics'
+      preLoaderRoute: typeof SuperAnalyticsRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/avisos': {
+      id: '/super/avisos'
+      path: '/avisos'
+      fullPath: '/super/avisos'
+      preLoaderRoute: typeof SuperAvisosRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/backups': {
+      id: '/super/backups'
+      path: '/backups'
+      fullPath: '/super/backups'
+      preLoaderRoute: typeof SuperBackupsRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/catalogos': {
+      id: '/super/catalogos'
+      path: '/catalogos'
+      fullPath: '/super/catalogos'
+      preLoaderRoute: typeof SuperCatalogosRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/configuracion': {
+      id: '/super/configuracion'
+      path: '/configuracion'
+      fullPath: '/super/configuracion'
+      preLoaderRoute: typeof SuperConfiguracionRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/desarrollo': {
+      id: '/super/desarrollo'
+      path: '/desarrollo'
+      fullPath: '/super/desarrollo'
+      preLoaderRoute: typeof SuperDesarrolloRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/empresas': {
+      id: '/super/empresas'
+      path: '/empresas'
+      fullPath: '/super/empresas'
+      preLoaderRoute: typeof SuperEmpresasRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/integraciones': {
+      id: '/super/integraciones'
+      path: '/integraciones'
+      fullPath: '/super/integraciones'
+      preLoaderRoute: typeof SuperIntegracionesRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/seguridad': {
+      id: '/super/seguridad'
+      path: '/seguridad'
+      fullPath: '/super/seguridad'
+      preLoaderRoute: typeof SuperSeguridadRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/sistema': {
+      id: '/super/sistema'
+      path: '/sistema'
+      fullPath: '/super/sistema'
+      preLoaderRoute: typeof SuperSistemaRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/soporte': {
+      id: '/super/soporte'
+      path: '/soporte'
+      fullPath: '/super/soporte'
+      preLoaderRoute: typeof SuperSoporteRouteImport
+      parentRoute: typeof SuperRoute
+    }
+    '/super/usuarios': {
+      id: '/super/usuarios'
+      path: '/usuarios'
+      fullPath: '/super/usuarios'
+      preLoaderRoute: typeof SuperUsuariosRouteImport
+      parentRoute: typeof SuperRoute
     }
     '/unidad/$no': {
       id: '/unidad/$no'
@@ -490,6 +1043,20 @@ const InspeccionesRouteWithChildren = InspeccionesRoute._addFileChildren(
   InspeccionesRouteChildren,
 )
 
+interface LevantarRouteChildren {
+  LevantarTemplateIdRoute: typeof LevantarTemplateIdRoute
+  LevantarIndexRoute: typeof LevantarIndexRoute
+}
+
+const LevantarRouteChildren: LevantarRouteChildren = {
+  LevantarTemplateIdRoute: LevantarTemplateIdRoute,
+  LevantarIndexRoute: LevantarIndexRoute,
+}
+
+const LevantarRouteWithChildren = LevantarRoute._addFileChildren(
+  LevantarRouteChildren,
+)
+
 interface MrRouteChildren {
   MrIdRoute: typeof MrIdRoute
   MrNuevoRoute: typeof MrNuevoRoute
@@ -504,19 +1071,91 @@ const MrRouteChildren: MrRouteChildren = {
 
 const MrRouteWithChildren = MrRoute._addFileChildren(MrRouteChildren)
 
+interface PlantillasRouteChildren {
+  PlantillasIdRoute: typeof PlantillasIdRoute
+  PlantillasIndexRoute: typeof PlantillasIndexRoute
+}
+
+const PlantillasRouteChildren: PlantillasRouteChildren = {
+  PlantillasIdRoute: PlantillasIdRoute,
+  PlantillasIndexRoute: PlantillasIndexRoute,
+}
+
+const PlantillasRouteWithChildren = PlantillasRoute._addFileChildren(
+  PlantillasRouteChildren,
+)
+
+interface RegistrosRouteChildren {
+  RegistrosIdRoute: typeof RegistrosIdRoute
+  RegistrosIndexRoute: typeof RegistrosIndexRoute
+}
+
+const RegistrosRouteChildren: RegistrosRouteChildren = {
+  RegistrosIdRoute: RegistrosIdRoute,
+  RegistrosIndexRoute: RegistrosIndexRoute,
+}
+
+const RegistrosRouteWithChildren = RegistrosRoute._addFileChildren(
+  RegistrosRouteChildren,
+)
+
+interface SuperRouteChildren {
+  SuperAnalyticsRoute: typeof SuperAnalyticsRoute
+  SuperAvisosRoute: typeof SuperAvisosRoute
+  SuperBackupsRoute: typeof SuperBackupsRoute
+  SuperCatalogosRoute: typeof SuperCatalogosRoute
+  SuperConfiguracionRoute: typeof SuperConfiguracionRoute
+  SuperDesarrolloRoute: typeof SuperDesarrolloRoute
+  SuperEmpresasRoute: typeof SuperEmpresasRoute
+  SuperIntegracionesRoute: typeof SuperIntegracionesRoute
+  SuperSeguridadRoute: typeof SuperSeguridadRoute
+  SuperSistemaRoute: typeof SuperSistemaRoute
+  SuperSoporteRoute: typeof SuperSoporteRoute
+  SuperUsuariosRoute: typeof SuperUsuariosRoute
+  SuperIndexRoute: typeof SuperIndexRoute
+}
+
+const SuperRouteChildren: SuperRouteChildren = {
+  SuperAnalyticsRoute: SuperAnalyticsRoute,
+  SuperAvisosRoute: SuperAvisosRoute,
+  SuperBackupsRoute: SuperBackupsRoute,
+  SuperCatalogosRoute: SuperCatalogosRoute,
+  SuperConfiguracionRoute: SuperConfiguracionRoute,
+  SuperDesarrolloRoute: SuperDesarrolloRoute,
+  SuperEmpresasRoute: SuperEmpresasRoute,
+  SuperIntegracionesRoute: SuperIntegracionesRoute,
+  SuperSeguridadRoute: SuperSeguridadRoute,
+  SuperSistemaRoute: SuperSistemaRoute,
+  SuperSoporteRoute: SuperSoporteRoute,
+  SuperUsuariosRoute: SuperUsuariosRoute,
+  SuperIndexRoute: SuperIndexRoute,
+}
+
+const SuperRouteWithChildren = SuperRoute._addFileChildren(SuperRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ActivosRoute: ActivosRoute,
   AlmacenRoute: AlmacenRouteWithChildren,
+  AutomatizacionesRoute: AutomatizacionesRoute,
   AutorizarRoute: AutorizarRoute,
+  BuscarRoute: BuscarRoute,
   ConfiguracionRoute: ConfiguracionRoute,
   EquipoRoute: EquipoRoute,
+  IncidenciasRoute: IncidenciasRoute,
   InspeccionesRoute: InspeccionesRouteWithChildren,
+  LevantarRoute: LevantarRouteWithChildren,
   LoginRoute: LoginRoute,
   MrRoute: MrRouteWithChildren,
   NuevaRoute: NuevaRoute,
   OnboardingRoute: OnboardingRoute,
   PagoRoute: PagoRoute,
+  PlantillasRoute: PlantillasRouteWithChildren,
+  RegistrosRoute: RegistrosRouteWithChildren,
   ReportesRoute: ReportesRoute,
+  SucursalesRoute: SucursalesRoute,
+  SuperRoute: SuperRouteWithChildren,
+  TareasRoute: TareasRoute,
   UnidadNoRoute: UnidadNoRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

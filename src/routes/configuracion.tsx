@@ -10,6 +10,8 @@ import { getSmtpSettings, saveSmtpSettings } from "@/lib/server/settings";
 import { listArchivedInspections, restoreInspection } from "@/lib/server/inspections";
 import { formatContainer } from "@/lib/iso6346";
 import { formatDate } from "@/lib/utils";
+import { DASHBOARD_WIDGETS } from "@/lib/engine-catalog";
+import { getEngineDashboard, saveDashboardPrefs } from "@/lib/server/engine";
 
 export const Route = createFileRoute("/configuracion")({ component: Page });
 
@@ -87,9 +89,20 @@ function Configuracion() {
         <p className="text-xs font-medium uppercase tracking-[0.22em] text-steel">Empresa</p>
         <h1 className="font-display text-4xl tracking-wide text-navy">Configuración</h1>
         <p className="mt-1 text-sm text-steel">
-          Correo SMTP, respaldos y folios archivados. Solo de este patio.
+          Plantillas, sucursales, reglas, SMTP y respaldos. Solo de esta empresa.
         </p>
       </div>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <CfgLink to="/plantillas" title="Plantillas" body="Constructor de formularios y estados." />
+        <CfgLink to="/sucursales" title="Sucursales" body="Patios, naves o sucursales." />
+        <CfgLink to="/automatizaciones" title="Automatizaciones" body="Si ocurre X, hacer Y." />
+        <CfgLink to="/activos" title="Activos" body="Unidades, vehículos, almacenes." />
+        <CfgLink to="/incidencias" title="Incidencias" body="Daños, fallas, no conformidades." />
+        <CfgLink to="/equipo" title="Equipo" body="Usuarios y roles de esta empresa." />
+      </section>
+
+      <DashWidgets />
 
       <section className="rounded-lg border border-line bg-card p-5 shadow-card space-y-3">
         <h2 className="font-display text-2xl text-navy">SMTP de la empresa</h2>
@@ -169,5 +182,47 @@ function Configuracion() {
         </ul>
       </section>
     </div>
+  );
+}
+
+function CfgLink({ to, title, body }: { to: string; title: string; body: string }) {
+  return (
+    <Link to={to as "/plantillas"} className="rounded-lg border border-line bg-card p-4 shadow-card hover:border-teal/40">
+      <h2 className="font-display text-xl text-navy">{title}</h2>
+      <p className="text-sm text-steel">{body}</p>
+    </Link>
+  );
+}
+
+function DashWidgets() {
+  const qc = useQueryClient();
+  const d = useQuery({ queryKey: ["engine-dash"], queryFn: () => getEngineDashboard() });
+  const selected = new Set(d.data?.widgets ?? []);
+  return (
+    <section className="rounded-lg border border-line bg-card p-5 shadow-card">
+      <h2 className="font-display text-2xl text-navy">Indicadores del inicio</h2>
+      <p className="text-sm text-steel">El administrador elige qué ve el patio en el dashboard.</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {DASHBOARD_WIDGETS.map((w) => {
+          const on = selected.has(w.key);
+          return (
+            <button
+              key={w.key}
+              type="button"
+              className={`rounded-sm border px-3 py-2 text-sm ${on ? "border-teal bg-teal-soft text-teal-dark" : "border-line bg-card text-steel"}`}
+              onClick={() => {
+                const next = DASHBOARD_WIDGETS.map((x) => x.key).filter((k) => (k === w.key ? !on : selected.has(k)));
+                void saveDashboardPrefs({ data: { widgets: next } }).then(() => {
+                  toast.success("Dashboard actualizado");
+                  void qc.invalidateQueries({ queryKey: ["engine-dash"] });
+                });
+              }}
+            >
+              {w.label}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }

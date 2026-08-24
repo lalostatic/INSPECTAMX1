@@ -12,7 +12,7 @@
 import type { ModuleKey, Role } from "./catalog";
 
 export function canCreateInspection(role: Role) {
-  return role === "inspector" || role === "admin";
+  return role === "inspector" || role === "admin" || role === "supervisor";
 }
 
 export function canViewArchive(role: Role) {
@@ -37,8 +37,20 @@ export function canManageConfig(role: Role) {
   return role === "admin";
 }
 
+export function canManageTemplates(role: Role) {
+  return role === "admin";
+}
+
+export function canAssignWork(role: Role) {
+  return role === "admin" || role === "supervisor" || role === "office";
+}
+
 /** 7. Reportes para administradores (y oficina). */
 export function canSeeReports(role: Role) {
+  return role === "admin" || role === "office" || role === "supervisor";
+}
+
+export function canViewLiveFolios(role: Role) {
   return role === "admin" || role === "office" || role === "supervisor";
 }
 
@@ -47,7 +59,7 @@ export function canArchiveInspection(role: Role) {
 }
 
 export function canSeeModule(role: Role, module: ModuleKey) {
-  if (role === "admin" || role === "office") return true;
+  if (role === "admin" || role === "office" || role === "consulta") return true;
   if (module === "inspeccion") return role === "inspector" || role === "supervisor";
   if (module === "mr") return role === "repair" || role === "supervisor";
   if (module === "pintura") return role === "painter" || role === "supervisor";
