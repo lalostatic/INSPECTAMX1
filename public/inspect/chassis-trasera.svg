@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <rect width="800" height="480" fill="#0e2433"/>
+  <text x="24" y="36" fill="#8fd0d8" font-family="system-ui,sans-serif" font-size="14" letter-spacing="2">CHASIS · VISTA TRASERA</text>
+  <!-- main frame rear -->
+  <rect x="180" y="100" width="440" height="80" rx="6" fill="#1a3a4a" stroke="#8fd0d8" stroke-width="2.5"/>
+  <!-- bumper / estribo -->
+  <rect x="200" y="190" width="400" height="36" rx="4" fill="#1a3a4a" stroke="#8fd0d8" stroke-width="2"/>
+  <text x="340" y="213" fill="#8fd0d8" font-size="13" font-family="system-ui">ESTRIBO / DEFENSA</text>
+  <!-- plate -->
+  <rect x="320" y="120" width="160" height="40" rx="3" fill="#0e2433" stroke="#f3f1ec" stroke-width="1.5"/>
+  <text x="350" y="145" fill="#f3f1ec" font-size="12" font-family="system-ui">PLACA CIRC.</text>
+  <!-- lights left -->
+  <circle cx="220" cy="140" r="18" fill="#b54a3a" stroke="#f3f1ec" stroke-width="1.5"/>
+  <circle cx="260" cy="140" r="12" fill="#1f8a96" stroke="#8fd0d8" stroke-width="1.5"/>
+  <text x="200" y="90" fill="#8fd0d8" font-size="11" font-family="system-ui">CALAVERAS IZQ</text>
+  <!-- lights right -->
+  <circle cx="580" cy="140" r="18" fill="#b54a3a" stroke="#f3f1ec" stroke-width="1.5"/>
+  <circle cx="540" cy="140" r="12" fill="#1f8a96" stroke="#8fd0d8" stroke-width="1.5"/>
+  <text x="520" y="90" fill="#8fd0d8" font-size="11" font-family="system-ui">CALAVERAS DER</text>
+  <!-- mud flaps / lodera -->
+  <rect x="200" y="240" width="50" height="70" rx="2" fill="#1a3a4a" stroke="#5b6b75" stroke-width="1.5"/>
+  <rect x="550" y="240" width="50" height="70" rx="2" fill="#1a3a4a" stroke="#5b6b75" stroke-width="1.5"/>
+  <text x="195" y="330" fill="#8fd0d8" font-size="11" font-family="system-ui">LODERA</text>
+  <text x="545" y="330" fill="#8fd0d8" font-size="11" font-family="system-ui">LODERA</text>
+  <!-- wheels -->
+  <circle cx="280" cy="380" r="48" fill="#0e2433" stroke="#8fd0d8" stroke-width="3"/>
+  <circle cx="280" cy="380" r="20" fill="#1a3a4a" stroke="#5b6b75" stroke-width="2"/>
+  <circle cx="520" cy="380" r="48" fill="#0e2433" stroke="#8fd0d8" stroke-width="3"/>
+  <circle cx="520" cy="380" r="20" fill="#1a3a4a" stroke="#5b6b75" stroke-width="2"/>
+  <text x="340" y="400" fill="#8fd0d8" font-size="12" font-family="system-ui">LLANTAS TRASERAS</text>
+  <!-- reflective -->
+  <rect x="300" y="250" width="200" height="12" rx="2" fill="#f3f1ec" opacity="0.7"/>
+  <text x="340" y="280" fill="#8fd0d8" font-size="11" font-family="system-ui">REFLEJANTES</text>
+</svg>
