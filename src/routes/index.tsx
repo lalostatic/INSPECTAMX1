@@ -24,6 +24,12 @@ function Home() {
   );
 }
 
+function templateHref(kind: string, id: string): { to: string; params?: { templateId: string } } {
+  if (kind === "container_map") return { to: "/nueva" };
+  if (kind === "chassis_map") return { to: "/chasis" };
+  return { to: "/levantar/$templateId", params: { templateId: id } };
+}
+
 function Dashboard() {
   const nav = useNavigate();
   const session = useQuery({ queryKey: ["session"], queryFn: () => getSession() });
@@ -127,22 +133,25 @@ function Dashboard() {
           ) : null}
         </div>
         <div className="grid gap-3 md:grid-cols-2">
-          {(templates.data ?? []).filter((t) => t.active).map((t) => (
-            <Link
-              key={t.id}
-              to={t.kind === "container_map" ? "/nueva" : "/levantar/$templateId"}
-              params={t.kind === "container_map" ? undefined : { templateId: t.id }}
-              className="rounded-lg border border-line bg-card p-5 shadow-card hover:border-teal/40"
-            >
-              <p className="text-[10px] uppercase tracking-wider text-steel">{t.category}</p>
-              <h3 className="font-display text-2xl text-navy">{t.name}</h3>
-              <p className="mt-1 text-sm text-steel">{t.description}</p>
-              <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-dark">
-                {canCreateInspection(m.role) ? "Levantar" : "Ver"}
-                <ChevronRight className="size-4" />
-              </span>
-            </Link>
-          ))}
+          {(templates.data ?? []).filter((t) => t.active).map((t) => {
+            const href = templateHref(t.kind, t.id);
+            return (
+              <Link
+                key={t.id}
+                to={href.to as "/nueva" | "/chasis" | "/levantar/$templateId"}
+                params={href.params as { templateId: string } | undefined}
+                className="rounded-lg border border-line bg-card p-5 shadow-card hover:border-teal/40"
+              >
+                <p className="text-[10px] uppercase tracking-wider text-steel">{t.category}</p>
+                <h3 className="font-display text-2xl text-navy">{t.name}</h3>
+                <p className="mt-1 text-sm text-steel">{t.description}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-dark">
+                  {canCreateInspection(m.role) ? "Levantar" : "Ver"}
+                  <ChevronRight className="size-4" />
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </section>
 
