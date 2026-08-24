@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>INSPECTAMX — demo</title>
+    <meta name="description" content="Demo de INSPECTAMX: patio, taller M&R y pintura. Inspección con mapa y foto." />
+    <meta property="og:title" content="INSPECTAMX — demo" />
+    <meta property="og:description" content="Patio, taller M&R y pintura." />
+    <meta property="og:image" content="./assets/login.jpg" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --navy: #0e2433; --navy-deep: #08151f; --ink: #14202b; --paper: #f3f1ec;
+        --teal: #1f8a96; --teal-dark: #176e78; --steel: #5b6b75; --line: #d5d0c6; --card: #fffcf7;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { background: var(--paper); color: var(--ink); font-family: "IBM Plex Sans", system-ui, sans-serif; line-height: 1.5; }
+      img { max-width: 100%; display: block; height: auto; background: #d9d4c8; }
+      a { color: inherit; text-decoration: none; }
+      .wrap { width: min(1080px, calc(100% - 2rem)); margin-inline: auto; }
+      header.top { position: sticky; top: 0; z-index: 20; background: var(--navy); color: var(--paper); }
+      header.top .inner { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+      .brand { display: flex; align-items: center; gap: 10px; }
+      .brand svg { width: 32px; height: 32px; }
+      .brand span { font-family: "Barlow Condensed", sans-serif; letter-spacing: 0.16em; font-weight: 600; font-size: 1.15rem; }
+      .demo-badge { font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: #8fd0d8; border: 1px solid rgba(143,208,216,.4); padding: 0.35rem 0.7rem; border-radius: 999px; }
+      .hero { position: relative; min-height: 72vh; display: grid; place-items: end stretch; color: var(--paper); overflow: hidden; background: var(--navy-deep); }
+      .hero img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 40%; }
+      .hero .veil { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,21,31,0.92) 0%, rgba(14,36,51,0.7) 50%, rgba(14,36,51,0.28) 100%); }
+      .hero .copy { position: relative; padding: 5rem 0 4rem; }
+      .kicker { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #8fd0d8; margin: 0 0 0.75rem; }
+      h1 { font-family: "Barlow Condensed", sans-serif; font-size: clamp(2.6rem, 7vw, 5rem); line-height: 0.95; margin: 0 0 1rem; }
+      h2 { font-family: "Barlow Condensed", sans-serif; font-size: clamp(1.8rem, 4vw, 2.5rem); color: var(--navy); margin: 0 0 0.5rem; }
+      .lede { max-width: 36rem; font-size: 1.05rem; color: rgba(243,241,236,0.9); margin: 0 0 1.5rem; }
+      .sub { color: var(--steel); margin: 0 0 1.75rem; max-width: 40rem; }
+      section { padding: 4rem 0; }
+      section.alt { background: #fff; border-block: 1px solid var(--line); }
+      .grid-3 { display: grid; gap: 1rem; grid-template-columns: repeat(3, 1fr); }
+      .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem 1.25rem; }
+      .card h3 { margin: 0 0 0.35rem; color: var(--navy); }
+      .card p { margin: 0; color: var(--steel); font-size: 0.95rem; }
+      .shots { display: grid; gap: 1.1rem; grid-template-columns: 1fr 1fr; }
+      .shot { margin: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: var(--navy); }
+      .shot.wide { grid-column: 1 / -1; }
+      .shot img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top center; }
+      .shot figcaption { padding: 0.65rem 1rem; font-size: 0.8rem; color: var(--steel); background: var(--card); }
+      .phones { display: grid; gap: 1rem; grid-template-columns: 1fr 1fr; max-width: 520px; }
+      .phone { border-radius: 28px; overflow: hidden; border: 8px solid var(--navy); }
+      .phone img { width: 100%; aspect-ratio: 390 / 844; object-fit: cover; object-position: top; }
+      footer { background: var(--navy-deep); color: rgba(243,241,236,0.75); padding: 1.75rem 0; font-size: 0.85rem; }
+      @media (max-width: 840px) {
+        .grid-3, .shots, .phones { grid-template-columns: 1fr; }
+        .shot.wide { grid-column: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap inner">
+        <a class="brand" href="#inicio">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="6" fill="#0E2433" />
+            <rect x="4" y="4" width="24" height="6" fill="#1F8A96" />
+            <rect x="4" y="13" width="24" height="6" fill="#F3F1EC" />
+            <rect x="4" y="22" width="24" height="6" fill="#B54A3A" />
+          </svg>
+          <span>INSPECTAMX</span>
+        </a>
+        <span class="demo-badge">Versión demo</span>
+      </div>
+    </header>
+
+    <section class="hero" id="inicio">
+      <img class="bg" src="./assets/puerto.jpg" width="1600" height="900" alt="Patio de contenedores" />
+      <div class="veil"></div>
+      <div class="wrap copy">
+        <p class="kicker">Demo 1.2</p>
+        <h1>Patio, taller M&R<br />y pintura.</h1>
+        <p class="lede">Inspección con mapa y foto. Reporte de taller. Entrada de almacén. Desde la computadora o el teléfono.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <p class="kicker" style="color: var(--teal-dark)">Qué hace</p>
+        <h2>Tres apartados.</h2>
+        <p class="sub">Lo que se anota hoy en papel, en digital.</p>
+        <div class="grid-3">
+          <article class="card"><h3>Inspección</h3><p>Número de unidad, mapa y foto. El daño es opcional.</p></article>
+          <article class="card"><h3>M&R</h3><p>Fecha, contenedor y trabajo realizado.</p></article>
+          <article class="card"><h3>Pintura</h3><p>Folio, material y unidades acondicionadas.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="alt" id="producto">
+      <div class="wrap">
+        <p class="kicker" style="color: var(--teal-dark)">Vista previa</p>
+        <h2>Así se ve el sistema.</h2>
+        <p class="sub">Capturas de la versión demo. Los datos son de ejemplo.</p>
+        <div class="shots">
+          <figure class="shot wide">
+            <img src="./assets/login.jpg" width="1440" height="900" alt="Inicio de sesión" />
+            <figcaption>Inicio de sesión. Correo y contraseña.</figcaption>
+          </figure>
+          <figure class="shot wide">
+            <img src="./assets/mapa.jpg" width="1440" height="900" alt="Mapa de puntos" />
+            <figcaption>Mapa de puntos. Al tocar un punto se abre la cámara.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="./assets/patio.jpg" width="1440" height="900" alt="Inicio" />
+            <figcaption>Inicio de operación.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="./assets/inspecciones.jpg" width="1440" height="900" alt="Inspecciones" />
+            <figcaption>Folios de inspección.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="./assets/mr.jpg" width="1440" height="900" alt="M&R" />
+            <figcaption>Reporte de trabajo del taller.</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="./assets/pintura.jpg" width="1440" height="900" alt="Pintura" />
+            <figcaption>Entrada de almacén / pintura.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <p class="kicker" style="color: var(--teal-dark)">En el muelle</p>
+        <h2>También en el teléfono.</h2>
+        <p class="sub">La misma operación en el patio.</p>
+        <div class="phones">
+          <div class="phone"><img src="./assets/login-mobile.jpg" width="390" height="844" alt="Login en teléfono" /></div>
+          <div class="phone"><img src="./assets/patio-mobile.jpg" width="390" height="844" alt="Patio en teléfono" /></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">INSPECTAMX · versión demo · inspectamx.com</div>
+    </footer>
+  </body>
+</html>
