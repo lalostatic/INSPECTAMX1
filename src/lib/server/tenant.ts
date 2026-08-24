@@ -170,7 +170,7 @@ export const createOrg = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const existing = await loadMembership(context.userId);
     if (existing) return existing;
-    throw new Error("Las empresas nuevas las autoriza el desarrollador de INSPECTA.");
+    throw new Error("Las empresas nuevas las autoriza el desarrollador de INSPECTAMX.");
   });
 
 const joinIn = z.object({
@@ -209,6 +209,7 @@ export const listTeam = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
   .handler(async ({ context }): Promise<TeamMember[]> => {
     const m = await requireMembership(context.userId);
+    if (m.role !== "admin") throw new Error("Solo el administrador ve el equipo");
     const sql = await getSql();
     const rows = await sql<{
       user_id: string;

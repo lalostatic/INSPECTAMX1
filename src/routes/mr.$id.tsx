@@ -16,7 +16,7 @@ function Detail() {
   const report = q.data;
   if (q.isPending) return <p className="text-sm text-steel">Cargando…</p>;
   if (!report) return <p className="text-sm text-steel">Reporte no encontrado.</p>;
-  const org = session.data?.membership?.orgName ?? "INSPECTA";
+  const org = session.data?.membership?.orgName ?? "INSPECTAMX";
   return (
     <div>
       <PrintBar title="Formato de reparadores" />

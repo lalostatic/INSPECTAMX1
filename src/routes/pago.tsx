@@ -132,7 +132,7 @@ function Checkout({
           </div>
 
           <div className="flex items-end justify-between rounded-md bg-paper px-4 py-3">
-            <span className="text-sm text-steel">INSPECTA · IVA incluido</span>
+            <span className="text-sm text-steel">INSPECTAMX</span>
             <span className="font-display text-3xl tracking-wide text-navy">
               {formatMoney(billing.amountCentavos, billing.currency)}
             </span>

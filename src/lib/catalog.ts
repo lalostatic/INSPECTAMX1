@@ -1,5 +1,8 @@
-export const APP_NAME = "INSPECTA";
-export const APP_TAGLINE = "Sistema de contenedores";
+export const APP_NAME = "INSPECTAMX";
+export const APP_TAGLINE = "Operación de patio";
+/** Dominio de producción. MODIFICAR si cambia el hosting. */
+export const APP_DOMAIN = "inspectamx.com";
+export const APP_URL = "https://inspectamx.com";
 
 export const NAVIERAS = [
   "Hapag-Lloyd", "MSC", "Maersk", "CMA CGM", "ONE", "Evergreen",
@@ -31,7 +34,7 @@ export const INSPECTION_TYPES = [
 ] as const;
 
 export const LOCATIONS = [
-  "Inspección en Bahía", "Patio", "Muelle", "Taller M&R", "Rampa", "Stack", "Gate", "Cerlan",
+  "Inspección en Bahía", "Patio", "Muelle", "Taller M&R", "Rampa", "Stack", "Gate",
 ] as const;
 
 export const DAMAGES = [

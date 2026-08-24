@@ -98,7 +98,7 @@ export async function seedDemoAccounts() {
   if (!globalRef.__inspectaDemoSeed__) {
     globalRef.__inspectaDemoSeed__ = (async () => {
       await createCredentialUser({
-        name: "Desarrollador INSPECTA",
+        name: "Desarrollador INSPECTAMX",
         email: DEVELOPER_EMAIL,
         password: DEMO_PASSWORD,
       });

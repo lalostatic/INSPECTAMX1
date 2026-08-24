@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlmacenRouteImport } from './routes/almacen'
 import { Route as AutorizarRouteImport } from './routes/autorizar'
+import { Route as ConfiguracionRouteImport } from './routes/configuracion'
 import { Route as EquipoRouteImport } from './routes/equipo'
 import { Route as InspeccionesRouteImport } from './routes/inspecciones'
 import { Route as LoginRouteImport } from './routes/login'
@@ -19,6 +20,7 @@ import { Route as MrRouteImport } from './routes/mr'
 import { Route as NuevaRouteImport } from './routes/nueva'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PagoRouteImport } from './routes/pago'
+import { Route as ReportesRouteImport } from './routes/reportes'
 import { Route as AlmacenIndexRouteImport } from './routes/almacen.index'
 import { Route as AlmacenIdRouteImport } from './routes/almacen.$id'
 import { Route as AlmacenNuevoRouteImport } from './routes/almacen.nuevo'
@@ -43,6 +45,11 @@ const AlmacenRoute = AlmacenRouteImport.update({
 const AutorizarRoute = AutorizarRouteImport.update({
   id: '/autorizar',
   path: '/autorizar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracionRoute = ConfiguracionRouteImport.update({
+  id: '/configuracion',
+  path: '/configuracion',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EquipoRoute = EquipoRouteImport.update({
@@ -78,6 +85,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
 const PagoRoute = PagoRouteImport.update({
   id: '/pago',
   path: '/pago',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportesRoute = ReportesRouteImport.update({
+  id: '/reportes',
+  path: '/reportes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AlmacenIndexRoute = AlmacenIndexRouteImport.update({
@@ -135,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/almacen': typeof AlmacenRouteWithChildren
   '/autorizar': typeof AutorizarRoute
+  '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
   '/inspecciones': typeof InspeccionesRouteWithChildren
   '/login': typeof LoginRoute
@@ -142,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
+  '/reportes': typeof ReportesRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
@@ -156,11 +170,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/autorizar': typeof AutorizarRoute
+  '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
   '/login': typeof LoginRoute
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
+  '/reportes': typeof ReportesRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
@@ -177,6 +193,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/almacen': typeof AlmacenRouteWithChildren
   '/autorizar': typeof AutorizarRoute
+  '/configuracion': typeof ConfiguracionRoute
   '/equipo': typeof EquipoRoute
   '/inspecciones': typeof InspeccionesRouteWithChildren
   '/login': typeof LoginRoute
@@ -184,6 +201,7 @@ export interface FileRoutesById {
   '/nueva': typeof NuevaRoute
   '/onboarding': typeof OnboardingRoute
   '/pago': typeof PagoRoute
+  '/reportes': typeof ReportesRoute
   '/almacen/$id': typeof AlmacenIdRoute
   '/almacen/nuevo': typeof AlmacenNuevoRoute
   '/inspecciones/$id': typeof InspeccionesIdRoute
@@ -201,6 +219,7 @@ export interface FileRouteTypes {
     | '/'
     | '/almacen'
     | '/autorizar'
+    | '/configuracion'
     | '/equipo'
     | '/inspecciones'
     | '/login'
@@ -208,6 +227,7 @@ export interface FileRouteTypes {
     | '/nueva'
     | '/onboarding'
     | '/pago'
+    | '/reportes'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
@@ -222,11 +242,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/autorizar'
+    | '/configuracion'
     | '/equipo'
     | '/login'
     | '/nueva'
     | '/onboarding'
     | '/pago'
+    | '/reportes'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
@@ -242,6 +264,7 @@ export interface FileRouteTypes {
     | '/'
     | '/almacen'
     | '/autorizar'
+    | '/configuracion'
     | '/equipo'
     | '/inspecciones'
     | '/login'
@@ -249,6 +272,7 @@ export interface FileRouteTypes {
     | '/nueva'
     | '/onboarding'
     | '/pago'
+    | '/reportes'
     | '/almacen/$id'
     | '/almacen/nuevo'
     | '/inspecciones/$id'
@@ -265,6 +289,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AlmacenRoute: typeof AlmacenRouteWithChildren
   AutorizarRoute: typeof AutorizarRoute
+  ConfiguracionRoute: typeof ConfiguracionRoute
   EquipoRoute: typeof EquipoRoute
   InspeccionesRoute: typeof InspeccionesRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -272,6 +297,7 @@ export interface RootRouteChildren {
   NuevaRoute: typeof NuevaRoute
   OnboardingRoute: typeof OnboardingRoute
   PagoRoute: typeof PagoRoute
+  ReportesRoute: typeof ReportesRoute
   UnidadNoRoute: typeof UnidadNoRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -297,6 +323,13 @@ declare module '@tanstack/react-router' {
       path: '/autorizar'
       fullPath: '/autorizar'
       preLoaderRoute: typeof AutorizarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracion': {
+      id: '/configuracion'
+      path: '/configuracion'
+      fullPath: '/configuracion'
+      preLoaderRoute: typeof ConfiguracionRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/equipo': {
@@ -346,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/pago'
       fullPath: '/pago'
       preLoaderRoute: typeof PagoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reportes': {
+      id: '/reportes'
+      path: '/reportes'
+      fullPath: '/reportes'
+      preLoaderRoute: typeof ReportesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/almacen/': {
@@ -468,6 +508,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AlmacenRoute: AlmacenRouteWithChildren,
   AutorizarRoute: AutorizarRoute,
+  ConfiguracionRoute: ConfiguracionRoute,
   EquipoRoute: EquipoRoute,
   InspeccionesRoute: InspeccionesRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -475,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   NuevaRoute: NuevaRoute,
   OnboardingRoute: OnboardingRoute,
   PagoRoute: PagoRoute,
+  ReportesRoute: ReportesRoute,
   UnidadNoRoute: UnidadNoRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

@@ -118,6 +118,7 @@ function NuevaForm() {
     if (!file || !file.type.startsWith("image/")) return;
     let dataUrl: string;
     try {
+      // 2. Comprime a JPEG (calidad 0.85, máx. 1600 px) y luego se guarda en t_<uuid>.photos
       dataUrl = await compressImage(file);
     } catch {
       toast.error("No se pudo leer la foto");

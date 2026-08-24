@@ -24,7 +24,7 @@ export function Protected({ children }: { children: ReactNode }) {
       <div className="min-h-dvh bg-paper">
         <div className="h-14 bg-navy" />
         <div className="mx-auto max-w-7xl px-4 pt-10">
-          <p className="font-display text-2xl tracking-wide text-navy">INSPECTA</p>
+          <p className="font-display text-2xl tracking-wide text-navy">INSPECTAMX</p>
         </div>
       </div>
     );
@@ -76,7 +76,7 @@ function PendingAuth({ name }: { name: string }) {
         <Wordmark />
         <h1 className="font-display text-3xl tracking-wide text-navy">{name}</h1>
         <p className="text-sm text-steel">
-          Este patio está dado de alta pero aún no está autorizado. El desarrollador de INSPECTA debe
+          Este patio está dado de alta pero aún no está autorizado. El desarrollador de INSPECTAMX debe
           habilitarlo para operar.
         </p>
         <Button

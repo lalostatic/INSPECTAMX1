@@ -59,13 +59,24 @@ export function AppShell({
       }
     }
     if (membership.role === "admin") {
-      items.push({ to: "/equipo", label: "Equipo", icon: Users, match: (p) => p.startsWith("/equipo") });
+      items.push({ to: "/equipo", label: "Equipo", icon: Users, match: (p) => p.startsWith("/equipo") || p.startsWith("/configuracion") });
     }
-    return items.slice(0, 5);
+    if (membership.role === "admin" || membership.role === "office" || membership.role === "supervisor") {
+      items.push({ to: "/reportes", label: "Reportes", icon: ClipboardList, match: (p) => p.startsWith("/reportes") });
+    }
+    return items;
   }, [membership]);
 
   const cols =
-    nav.length <= 2 ? "grid-cols-2" : nav.length === 3 ? "grid-cols-3" : nav.length === 4 ? "grid-cols-4" : "grid-cols-5";
+    nav.length <= 2
+      ? "grid-cols-2"
+      : nav.length === 3
+        ? "grid-cols-3"
+        : nav.length === 4
+          ? "grid-cols-4"
+          : nav.length === 5
+            ? "grid-cols-5"
+            : "grid-cols-6";
 
   return (
     <div className="min-h-dvh bg-paper text-ink">

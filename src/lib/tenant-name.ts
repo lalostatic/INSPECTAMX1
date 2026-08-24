@@ -1,4 +1,4 @@
-/** Stable Postgres schema name for a patio. One schema = one company database. */
+/** INSPECTAMX — un esquema Postgres por empresa: t_<uuid sin guiones>. Nunca interpolar texto del usuario. */
 const UUID_HEX = /^[a-f0-9]{32}$/;
 export const TENANT_SCHEMA_RE = /^t_[a-f0-9]{32}$/;
 
@@ -11,6 +11,8 @@ const TABLES = [
   "warehouse_entries",
   "warehouse_materials",
   "warehouse_units",
+  "smtp_settings",
+  "backup_events",
 ] as const;
 
 export type TenantTable = (typeof TABLES)[number];

@@ -11,7 +11,7 @@ import { AuthProvider } from "@/lib/auth/provider";
 import { PreviewHostBridge } from "@/components/preview-host-bridge";
 import appCss from "../styles.css?url";
 
-const APP_NAME = "INSPECTA";
+import { APP_NAME } from "@/lib/catalog";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -22,7 +22,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "INSPECTA — patio, M&R y pintura por empresa.",
+          "INSPECTAMX — inspección, taller y almacén de patio.",
       },
       { name: "theme-color", content: "#0E2433" },
     ],
@@ -35,8 +35,6 @@ export const Route = createRootRoute({
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap",
       },
-      { rel: "manifest", href: "/__grok/manifest.webmanifest" },
-      { rel: "apple-touch-icon", href: "/__grok/icon-180.png" },
     ],
   }),
   component: Root,

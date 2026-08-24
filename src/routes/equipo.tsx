@@ -54,6 +54,10 @@ function EquipoForm({
         <h1 className="font-display text-4xl tracking-wide text-navy">Equipo y módulos</h1>
         <p className="mt-1 text-sm text-steel">
           El correo decide el patio: admin@{domain || "empresa.mx"} no se mezcla con otra empresa.
+          {" "}
+          <Link to="/configuracion" className="text-teal-dark">
+            SMTP y respaldos
+          </Link>
         </p>
       </div>
 

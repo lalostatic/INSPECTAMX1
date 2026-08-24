@@ -13,7 +13,7 @@ function Detail() {
   const entry = q.data;
   if (q.isPending) return <p className="text-sm text-steel">Cargando…</p>;
   if (!entry) return <p className="text-sm text-steel">Entrada no encontrada.</p>;
-  const org = session.data?.membership?.orgName ?? "INSPECTA";
+  const org = session.data?.membership?.orgName ?? "INSPECTAMX";
   return (
     <div>
       <PrintBar title="Formato de pintores" />

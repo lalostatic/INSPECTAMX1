@@ -22,7 +22,7 @@ function Onboarding() {
   if (isPending || (user && session.isPending)) {
     return (
       <div className="grid min-h-dvh place-items-center bg-paper">
-        <p className="font-display text-2xl tracking-wide text-navy">INSPECTA</p>
+        <p className="font-display text-2xl tracking-wide text-navy">INSPECTAMX</p>
       </div>
     );
   }

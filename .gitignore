@@ -9,6 +9,7 @@ screenshots
 .DS_Store
 /tmp
 AGENTS.md
+attachments/
 AGENTS.project.md
 INSPECTA-1.2.zip
 scripts/_capture-pages.mjs

@@ -1,9 +1,20 @@
+/**
+ * INSPECTAMX — inspecciones.
+ *
+ * 1. Dónde se guardan: tabla `inspections` (y `findings`) en el esquema de la
+ *    empresa: t_<uuid>.inspections. Cada patio = un esquema Postgres.
+ * 2. Fotos: tabla t_<uuid>.photos, columna data_url (JPEG comprimido).
+ * 4. Un inspector solo ve sus folios (filtro user_id). Admin/oficina ven todos.
+ * 5. Recuperar: no se borran; archiveInspection / restoreInspection.
+ *
+ * MODIFICAR: listSql para agregar columnas al listado.
+ */
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import { normalizeContainer } from "@/lib/iso6346";
-import { canCreateInspection } from "@/lib/roles";
+import { canArchiveInspection, canCreateInspection } from "@/lib/roles";
 import type { Finding, InspectionDetail, InspectionListItem } from "@/lib/types";
 import { requireMembership } from "@/lib/server/tenant";
 import { tenantTables, type TenantTables } from "@/lib/server/tenant-schema";
@@ -64,6 +75,7 @@ export const listInspections = createServerFn({ method: "GET" })
     const rows = await sql.query<HeadRow>(
       `${listSql(T)}
        where ($1::text is null or i.user_id = $1)
+         and i.archived_at is null
        order by i.inspected_at desc limit 300`,
       [mine],
     );
@@ -205,4 +217,42 @@ export const createInspection = createServerFn({ method: "POST" })
       fi += 1;
     }
     return { id };
+  });
+
+/** 5. Archivar folio (no se borra). El administrador lo recupera después. */
+export const archiveInspection = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: unknown) => z.object({ id: z.string() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const m = await requireMembership(context.userId);
+    if (!canArchiveInspection(m.role)) throw new Error("Su perfil no archiva folios");
+    const T = tenantTables(m.dbSchema);
+    const sql = await getSql();
+    await sql.query(`update ${T.inspections} set archived_at = now() where id = $1`, [data.id]);
+    return { ok: true };
+  });
+
+export const restoreInspection = createServerFn({ method: "POST" })
+  .middleware([authMiddleware])
+  .validator((input: unknown) => z.object({ id: z.string() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const m = await requireMembership(context.userId);
+    if (!canArchiveInspection(m.role)) throw new Error("Su perfil no recupera folios");
+    const T = tenantTables(m.dbSchema);
+    const sql = await getSql();
+    await sql.query(`update ${T.inspections} set archived_at = null where id = $1`, [data.id]);
+    return { ok: true };
+  });
+
+export const listArchivedInspections = createServerFn({ method: "GET" })
+  .middleware([authMiddleware])
+  .handler(async ({ context }): Promise<InspectionListItem[]> => {
+    const m = await requireMembership(context.userId);
+    if (!canArchiveInspection(m.role)) return [];
+    const T = tenantTables(m.dbSchema);
+    const sql = await getSql();
+    const rows = await sql.query<HeadRow>(
+      `${listSql(T)} where i.archived_at is not null order by i.archived_at desc limit 300`,
+    );
+    return rows.map(mapList);
   });

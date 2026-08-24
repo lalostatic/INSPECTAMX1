@@ -1,3 +1,13 @@
+/**
+ * INSPECTAMX — inicio de sesión.
+ *
+ * 3. Cómo inicia sesión cada inspector:
+ *    El administrador lo da de alta en Equipo (correo + contraseña + rol inspector).
+ *    No hay registro público. Entra en /login con ese correo.
+ *    El dominio del correo (admin@empresa.mx) lo ata a SU patio.
+ *
+ * MODIFICAR: DEV_WHATSAPP para el contacto de soporte.
+ */
 import { useState, type FormEvent } from "react";
 import { Navigate, useNavigate } from "@tanstack/react-router";
 import { authClient } from "@/lib/auth/client";

@@ -24,7 +24,7 @@ export function Wordmark({ light = false }: { light?: boolean }) {
           light ? "text-paper" : "text-navy",
         )}
       >
-        INSPECTA
+        INSPECTAMX
       </span>
     </span>
   );
