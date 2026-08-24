@@ -1,7 +1,6 @@
 import { RedirectToSignIn } from "@/lib/auth/gates";
 import { signOut } from "@/lib/auth/client";
 import { useCurrentUserState } from "@/lib/auth/use-current-user";
-import { skipStorageKey } from "@/lib/billing";
 import { getSession } from "@/lib/server/tenant";
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, useRouterState } from "@tanstack/react-router";
@@ -56,17 +55,11 @@ export function Protected({ children }: { children: ReactNode }) {
   if (membership.blocked) return <BlockedAccount name={membership.orgName} />;
   if (!membership.authorized) return <PendingAuth name={membership.orgName} />;
 
-  const billing = session.data?.billing;
-  if (billing?.needsPaywall && path !== "/pago") {
-    if (billing.status === "suspended") return <Navigate to="/pago" />;
-    const skipped =
-      typeof window !== "undefined" &&
-      sessionStorage.getItem(skipStorageKey(membership.orgId, billing.periodEnd)) === "1";
-    if (!skipped) return <Navigate to="/pago" />;
-  }
+  // Paywall desactivado de momento — se reactivará cuando exista la estructura de cobro.
+  // if (billing?.needsPaywall && path !== "/pago") { ... }
 
   return (
-    <AppShell membership={membership} billing={billing ?? null} impersonating={impersonating}>
+    <AppShell membership={membership} billing={null} impersonating={impersonating}>
       {children}
     </AppShell>
   );
