@@ -11,7 +11,18 @@ const tenantFiles = import.meta.glob("/migrations/tenant/*.sql", {
   eager: true,
 }) as Record<string, string>;
 
-const ready = new Set<string>();
+const g = globalThis as typeof globalThis & {
+  __imxTenantReady__?: Set<string>;
+  __imxTenantJobs__?: Map<string, Promise<string>>;
+};
+function tenantReady() {
+  g.__imxTenantReady__ ??= new Set();
+  return g.__imxTenantReady__;
+}
+function tenantJobs() {
+  g.__imxTenantJobs__ ??= new Map();
+  return g.__imxTenantJobs__;
+}
 
 function splitStatements(script: string): string[] {
   const withoutComments = script
@@ -179,18 +190,33 @@ async function dropPublicOpsIfEmpty(sql: Sql) {
 /** Create (or migrate) the patio's own database schema. Idempotent. */
 export async function ensureOrgTenant(orgId: string): Promise<string> {
   const schema = schemaNameFromOrgId(orgId);
+  const ready = tenantReady();
   if (ready.has(schema)) return schema;
-  const sql = await getSql();
-  await sql`
-    update organizations
-    set db_schema = coalesce(nullif(db_schema, ''), ${schema})
-    where id = ${orgId}
-  `;
-  await applyTenantDdl(sql, schema);
-  await copyLegacyPublicOps(sql, orgId, schema);
-  await dropPublicOpsIfEmpty(sql);
-  ready.add(schema);
-  return schema;
+  const jobs = tenantJobs();
+  const running = jobs.get(schema);
+  if (running) return running;
+  const job = (async () => {
+    const sql = await getSql();
+    await sql`
+      update organizations
+      set db_schema = coalesce(nullif(db_schema, ''), ${schema})
+      where id = ${orgId}
+    `;
+    await applyTenantDdl(sql, schema);
+    await copyLegacyPublicOps(sql, orgId, schema);
+    await dropPublicOpsIfEmpty(sql);
+    ready.add(schema);
+    return schema;
+  })().finally(() => {
+    jobs.delete(schema);
+  });
+  jobs.set(schema, job);
+  return job;
+}
+
+export function isMissingRelation(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /does not exist|no existe/i.test(msg);
 }
 
 export async function ensureAllTenants(): Promise<void> {

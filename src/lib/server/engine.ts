@@ -14,7 +14,7 @@ import {
 } from "@/lib/engine-catalog";
 import { canAssignWork, canCreateInspection, canManageTemplates } from "@/lib/roles";
 import { requireMembership } from "@/lib/server/tenant";
-import { tenantTables, type TenantTables } from "@/lib/server/tenant-schema";
+import { isMissingRelation, tenantTables, type TenantTables } from "@/lib/server/tenant-schema";
 import type { Membership } from "@/lib/types";
 import type { Sql } from "@/lib/db";
 
@@ -96,7 +96,7 @@ export const listTemplates = createServerFn({ method: "GET" })
         fieldCount: Number(r.field_count) || 0,
       }));
     } catch (err) {
-      console.error("[inspectamx] listTemplates", err);
+      if (!isMissingRelation(err)) throw err;
       return [];
     }
   });
@@ -1053,7 +1053,7 @@ export const getEngineDashboard = createServerFn({ method: "GET" })
         widgets,
       };
     } catch (err) {
-      console.error("[inspectamx] getEngineDashboard", err);
+      if (!isMissingRelation(err)) throw err;
       return emptyDash();
     }
   });

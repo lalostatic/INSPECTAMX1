@@ -3,7 +3,7 @@ import { authMiddleware } from "@/lib/auth/middleware";
 import { getSql } from "@/lib/db";
 import type { YardStats } from "@/lib/types";
 import { requireMembership } from "@/lib/server/tenant";
-import { tenantTables } from "@/lib/server/tenant-schema";
+import { isMissingRelation, tenantTables } from "@/lib/server/tenant-schema";
 
 export const getYardStats = createServerFn({ method: "GET" })
   .middleware([authMiddleware])
@@ -44,7 +44,7 @@ export const getYardStats = createServerFn({ method: "GET" })
         openMr: open?.c ?? 0,
       };
     } catch (err) {
-      console.error("[inspectamx] getYardStats", err);
+      if (!isMissingRelation(err)) throw err;
       return { inspectionsToday: 0, mrToday: 0, paintToday: 0, unknownOwnership: 0, openMr: 0 };
     }
   });

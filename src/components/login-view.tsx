@@ -22,6 +22,7 @@ import { clearBillingSkip } from "@/lib/billing";
 import { Button } from "@/components/ui/button";
 import { Field, Input } from "@/components/ui/input";
 import { Wordmark } from "@/components/mark";
+import { waitAuthReady } from "@/lib/server/demo-boot";
 
 const DEV_HANDLE = "@lalostatic";
 const DEV_WHATSAPP = "https://wa.me/525526594919";
@@ -56,18 +57,11 @@ export function LoginView() {
     setError("");
     setBusy(true);
     try {
-      let last = "Correo o contraseña incorrectos";
-      for (let i = 0; i < 10; i += 1) {
-        const res = await authClient.signIn.email({ email, password });
-        if (!res.error) {
-          clearBillingSkip();
-          await nav({ to: "/" });
-          return;
-        }
-        last = res.error.message || last;
-        await new Promise((r) => setTimeout(r, 800));
-      }
-      throw new Error(last);
+      await waitAuthReady();
+      const res = await authClient.signIn.email({ email, password });
+      if (res.error) throw new Error(res.error.message || "Correo o contraseña incorrectos");
+      clearBillingSkip();
+      await nav({ to: "/" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo entrar");
     } finally {

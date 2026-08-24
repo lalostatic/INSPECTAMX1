@@ -1,19 +1,29 @@
-import { createServerFn } from "@tanstack/react-start";
 import { DEMO_ORGS, DEMO_PASSWORD, demoEmail, type DemoOrg } from "@/lib/demo-accounts";
 import { DEVELOPER_EMAIL, DEVELOPER_EMAILS } from "@/lib/developer";
 import { addDays, addMonths } from "@/lib/billing";
 import { MODULES, type Role } from "@/lib/catalog";
 import { getSql } from "@/lib/db";
-import { createCredentialUser } from "@/lib/server/accounts";
+import { ensureUsersWithPassword } from "@/lib/server/accounts";
 import { stampNewOrgBilling } from "@/lib/server/billing";
 import { seedOrgIfEmpty } from "@/lib/server/seed";
 import { seedEngine } from "@/lib/server/seed-engine";
-import { ensureAllTenants, ensureOrgTenant, schemaNameFromOrgId } from "@/lib/server/tenant-schema";
+import { ensureOrgTenant, schemaNameFromOrgId } from "@/lib/server/tenant-schema";
 import { todayISO } from "@/lib/utils";
 
 const globalRef = globalThis as typeof globalThis & {
-  __inspectamxDemoSeed_v3__?: Promise<void>;
+  __inspectamxAuth_v4__?: Promise<void>;
+  __inspectamxOps_v4__?: Promise<void>;
 };
+
+async function enableModules(orgId: string) {
+  const sql = await getSql();
+  const values = MODULES.map((_, i) => `($1, $${i + 2}, true)`).join(", ");
+  await sql.query(
+    `insert into org_modules (org_id, module_key, enabled) values ${values}
+     on conflict (org_id, module_key) do nothing`,
+    [orgId, ...MODULES.map((m) => m.key)],
+  );
+}
 
 async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string> {
   const sql = await getSql();
@@ -47,13 +57,7 @@ async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string>
           storage_mb = ${org.storageMb}
       where id = ${found[0].id}
     `;
-    for (const mod of MODULES) {
-      await sql`
-        insert into org_modules (org_id, module_key, enabled)
-        values (${found[0].id}, ${mod.key}, ${true})
-        on conflict (org_id, module_key) do nothing
-      `;
-    }
+    await enableModules(found[0].id);
     return found[0].id;
   }
 
@@ -79,13 +83,7 @@ async function ensureDemoOrg(org: DemoOrg, adminUserId: string): Promise<string>
         db_schema = coalesce(nullif(db_schema, ''), ${schemaNameFromOrgId(orgId)})
     where id = ${orgId}
   `;
-  for (const mod of MODULES) {
-    await sql`
-      insert into org_modules (org_id, module_key, enabled)
-      values (${orgId}, ${mod.key}, ${true})
-      on conflict (org_id, module_key) do nothing
-    `;
-  }
+  await enableModules(orgId);
   return orgId;
 }
 
@@ -171,99 +169,108 @@ async function demoAlreadySeeded(): Promise<boolean> {
   }
 }
 
-export async function seedDemoAccounts() {
-  if (!globalRef.__inspectamxDemoSeed_v3__) {
-    globalRef.__inspectamxDemoSeed_v3__ = (async () => {
-      console.info("[inspectamx] demo seed start");
-      if (await demoAlreadySeeded()) {
-        await seedEnginesForExistingOrgs();
-        console.info("[inspectamx] demo seed already present");
-        return;
-      }
-      for (const email of DEVELOPER_EMAILS) {
-        await createCredentialUser({
-          name: "Desarrollador INSPECTAMX",
-          email,
-          password: DEMO_PASSWORD,
-        });
-      }
-      const sql = await getSql();
-      const orgIds: { id: string; name: string }[] = [];
-      for (const org of DEMO_ORGS) {
-        const ids = new Map<string, string>();
-        for (const account of org.accounts) {
-          const email = demoEmail(account.local, org.domain);
-          const { id } = await createCredentialUser({
-            name: account.name,
-            email,
-            password: DEMO_PASSWORD,
-          });
-          ids.set(email, id);
-        }
-        const adminEmail = demoEmail("admin", org.domain);
-        const adminId = ids.get(adminEmail);
-        if (!adminId) throw new Error(`No se pudo crear el administrador de ${org.name}`);
-        const orgId = await ensureDemoOrg(org, adminId);
-        orgIds.push({ id: orgId, name: org.name });
-        await sql`
-          update organizations
-          set status = ${org.status},
-              plan = ${org.plan},
-              legal_name = ${org.legalName},
-              rfc = ${org.rfc},
-              phone = ${org.phone},
-              address = ${org.address},
-              contact_email = ${`admin@${org.domain}`},
-              contact_name = ${org.accounts[0]?.name ?? "Admin"},
-              city = ${org.city},
-              max_users = ${org.maxUsers},
-              max_inspectors = ${org.maxInspectors},
-              storage_mb = ${org.storageMb}
-          where id = ${orgId}
-        `;
-        await applyDemoBilling(orgId, org.billing);
-        await ensureOrgTenant(orgId);
-        for (const account of org.accounts) {
-          const email = demoEmail(account.local, org.domain);
-          const userId = ids.get(email);
-          if (!userId) continue;
-          await ensureMember(orgId, userId, account.name, account.role);
-        }
-        const inspectorEmail = demoEmail("inspector", org.domain);
-        const inspectorId = ids.get(inspectorEmail) ?? adminId;
-        const inspectorName = org.accounts.find((a) => a.local === "inspector")?.name ?? "Inspector";
-        await seedOrgIfEmpty(orgId, inspectorId, inspectorName, org.sample);
-        const pack = org.slug === "contri" || org.slug === "istmo" ? org.slug : "cerlan";
-        await seedEngine(orgId, pack, inspectorId, inspectorName);
-      }
-      await ensureAllTenants();
-      await seedPlatformSamples(orgIds);
-      console.info("[inspectamx] demo seed done");
-    })().catch((err) => {
-      globalRef.__inspectamxDemoSeed_v3__ = undefined;
-      throw err;
-    });
+function allDemoUsers(): { name: string; email: string }[] {
+  const users: { name: string; email: string }[] = DEVELOPER_EMAILS.map((email) => ({
+    name: "Desarrollador INSPECTAMX",
+    email,
+  }));
+  for (const org of DEMO_ORGS) {
+    for (const account of org.accounts) {
+      users.push({ name: account.name, email: demoEmail(account.local, org.domain) });
+    }
   }
-  await globalRef.__inspectamxDemoSeed_v3__;
+  return users;
 }
 
-async function seedEnginesForExistingOrgs() {
+async function runAuthSeed() {
+  const t0 = Date.now();
+  if (await demoAlreadySeeded()) {
+    console.info("[inspectamx] auth seed skip", Date.now() - t0, "ms");
+    return;
+  }
+  const ids = await ensureUsersWithPassword(allDemoUsers(), DEMO_PASSWORD);
   const sql = await getSql();
-  const orgs = await sql<{ id: string; slug: string }>`select id, slug from organizations`;
+  for (const org of DEMO_ORGS) {
+    const adminEmail = demoEmail("admin", org.domain);
+    const adminId = ids.get(adminEmail);
+    if (!adminId) throw new Error(`No se pudo crear el administrador de ${org.name}`);
+    const orgId = await ensureDemoOrg(org, adminId);
+    await sql`
+      update organizations
+      set status = ${org.status},
+          plan = ${org.plan},
+          legal_name = ${org.legalName},
+          rfc = ${org.rfc},
+          phone = ${org.phone},
+          address = ${org.address},
+          contact_email = ${`admin@${org.domain}`},
+          contact_name = ${org.accounts[0]?.name ?? "Admin"},
+          city = ${org.city},
+          max_users = ${org.maxUsers},
+          max_inspectors = ${org.maxInspectors},
+          storage_mb = ${org.storageMb}
+      where id = ${orgId}
+    `;
+    await applyDemoBilling(orgId, org.billing);
+    for (const account of org.accounts) {
+      const email = demoEmail(account.local, org.domain);
+      const userId = ids.get(email);
+      if (!userId) continue;
+      await ensureMember(orgId, userId, account.name, account.role);
+    }
+  }
+  console.info("[inspectamx] auth seed", Date.now() - t0, "ms");
+}
+
+async function runOpsSeed() {
+  const t0 = Date.now();
+  const sql = await getSql();
+  const orgs = await sql<{ id: string; slug: string; name: string }>`
+    select id, slug, name from organizations order by created_at
+  `;
   for (const o of orgs) {
-    const pack = o.slug === "contri" || o.slug === "istmo" ? o.slug : "cerlan";
+    const pack: "cerlan" | "contri" | "istmo" =
+      o.slug === "contri" || o.slug === "istmo" ? o.slug : "cerlan";
+    const sample: "cerlan" | "contri" = o.slug === "contri" ? "contri" : "cerlan";
     const [mem] = await sql<{ user_id: string; display_name: string }>`
       select user_id, display_name from org_members where org_id = ${o.id} and role = ${"inspector"} limit 1
     `;
     if (!mem) continue;
+    await seedOrgIfEmpty(o.id, mem.user_id, mem.display_name, sample);
     await seedEngine(o.id, pack, mem.user_id, mem.display_name);
   }
+  await seedPlatformSamples(orgs);
+  console.info("[inspectamx] ops seed", Date.now() - t0, "ms");
 }
 
-/** Kick off seed without blocking the HTTP request (avoids abort/hang on preview). */
-export const ensureDemoUsers = createServerFn({ method: "GET" }).handler(async () => {
-  void seedDemoAccounts().catch((err) => {
+export async function waitAuthSeed() {
+  if (!globalRef.__inspectamxAuth_v4__) {
+    globalRef.__inspectamxAuth_v4__ = runAuthSeed().catch((err) => {
+      globalRef.__inspectamxAuth_v4__ = undefined;
+      throw err;
+    });
+  }
+  await globalRef.__inspectamxAuth_v4__;
+}
+
+async function waitOpsSeed() {
+  await waitAuthSeed();
+  if (!globalRef.__inspectamxOps_v4__) {
+    globalRef.__inspectamxOps_v4__ = runOpsSeed().catch((err) => {
+      globalRef.__inspectamxOps_v4__ = undefined;
+      throw err;
+    });
+  }
+  await globalRef.__inspectamxOps_v4__;
+}
+
+/** Fire auth then patio data. Does not await — login only waits on waitAuthSeed. */
+export function startDemoSeed() {
+  void waitOpsSeed().catch((err) => {
     console.error("[inspectamx] demo seed failed", err);
   });
-  return { ok: true };
-});
+}
+
+export async function seedDemoAccounts() {
+  await waitOpsSeed();
+}
