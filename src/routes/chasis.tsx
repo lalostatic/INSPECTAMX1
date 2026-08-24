@@ -49,7 +49,7 @@ function ChasisForm() {
   const [findings, setFindings] = useState<DraftFinding[]>([]);
   const [busy, setBusy] = useState(false);
   const [sheetId, setSheetId] = useState<string | null>(null);
-  const [mapView, setMapView] = useState<ChassisViewId>("frente");
+  const [mapView, setMapView] = useState<ChassisViewId>("lateral");
   const [lateralSide, setLateralSide] = useState<ChassisLateralSide>("derecho");
   const camRef = useRef<HTMLInputElement>(null);
   const pendingPoint = useRef<ChassisPoint | null>(null);
@@ -134,7 +134,7 @@ function ChasisForm() {
       return;
     }
     if (findings.length === 0) {
-      toast.error("Tome al menos una foto en el mapa");
+      toast.error("Tome al menos una foto en el plano del chasis");
       return;
     }
     setBusy(true);
@@ -146,10 +146,10 @@ function ChasisForm() {
           sizeCode: `${size}CH`,
           classCode: "F",
           ownership: "unknown",
-          inspectionType: "Estado de chasis",
+          inspectionType: "Inspección de chasis",
           locationName: "Patio",
           workOrder: "",
-          notes: `Formato de estado de chasis · tamaño ${size}'`,
+          notes: `Inspección de chasis · tamaño ${size}'`,
           missingLabel: false,
           findings: findings.map((f) => ({
             pointId: f.pointId,
@@ -164,7 +164,7 @@ function ChasisForm() {
       });
       await qc.invalidateQueries({ queryKey: ["inspections"] });
       await qc.invalidateQueries({ queryKey: ["stats"] });
-      toast.success("Estado de chasis registrado");
+      toast.success("Inspección de chasis registrada");
       await nav({ to: "/inspecciones/$id", params: { id: res.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "No se pudo guardar");
@@ -176,10 +176,10 @@ function ChasisForm() {
   return (
     <form className="mx-auto max-w-3xl space-y-6" onSubmit={(e) => void onSubmit(e)}>
       <div>
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-steel">Patio</p>
-        <h1 className="font-display text-4xl tracking-wide text-navy">Estado de chasis</h1>
+        <p className="text-xs font-medium uppercase tracking-[0.22em] text-steel">Patio · chasis</p>
+        <h1 className="font-display text-4xl tracking-wide text-navy">Inspección de chasis</h1>
         <p className="mt-1 text-sm text-steel">
-          Número de la unidad. Toque un punto en la imagen para fotografiar.
+          Plano técnico con puntos. Toque un punto para fotografiar el componente.
         </p>
       </div>
 
@@ -227,9 +227,9 @@ function ChasisForm() {
       </section>
 
       <section className="rounded-lg border border-line bg-card p-5 shadow-card">
-        <h2 className="font-display text-xl tracking-wide text-navy">Mapa de puntos</h2>
+        <h2 className="font-display text-xl tracking-wide text-navy">Plano de chasis</h2>
         <p className="mt-1 mb-4 text-sm text-steel">
-          Frente, superior, lateral y trasera. Toque un punto para abrir la cámara.
+          Lateral · superior · frente · trasera. Toque el punto en el dibujo.
         </p>
         <ChassisMap
           captured={captured}
@@ -331,7 +331,7 @@ function PointSheet({
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-steel">
-              {point ? `Punto ${point.n}` : "Foto"}
+              {point ? `Punto ${point.n} · chasis` : "Foto"}
             </p>
             <h3 className="font-display text-2xl tracking-wide text-navy">{title}</h3>
           </div>
