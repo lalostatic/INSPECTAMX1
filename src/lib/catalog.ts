@@ -38,10 +38,12 @@ export const LOCATIONS = [
   "Inspección en Bahía", "Patio", "Muelle", "Taller M&R", "Rampa", "Stack", "Gate",
 ] as const;
 
+/** Daños alineados a formatos de inspección de equipo (papel) y uso de patio. */
 export const DAMAGES = [
   "RESTOS DE CARGA", "SUCIO", "ABOLLADO", "AGUJERO", "OXIDADO", "CORTE",
   "FALTANTE", "GOLPE", "CALCAS", "CINTAS EN PANEL", "PISO DAÑADO",
   "GOMA DAÑADA", "LONA / RUBEN", "LLAVES", "SIN ETIQUETA",
+  "BARRA GUÍA ROTA", "OMEGA ROTO", "BLISTER / ABRASIÓN", "BOLSA / SELLO",
 ] as const;
 
 export const REPAIRS = [
@@ -107,13 +109,13 @@ export const MODULES: {
     key: "mr",
     label: "Reporte de trabajo M&R",
     short: "M&R",
-    blurb: "Fecha, contenedor y trabajo realizado.",
+    blurb: "Fecha, contenedor y trabajo realizado. Referencia: ~12 unidades/día.",
   },
   {
     key: "pintura",
     label: "Entrada de almacén / pintura",
     short: "Pintura",
-    blurb: "Folio, material y unidades acondicionadas.",
+    blurb: "Folio, material y unidades acondicionadas. Referencia: 5–7 contenedores/día.",
   },
 ];
 

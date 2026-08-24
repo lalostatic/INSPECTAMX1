@@ -4,9 +4,26 @@
 
 Producción: **https://inspectamx.com**
 
-Motor de plantillas para inspecciones, auditorías y levantamientos. Cada empresa arma su propio proceso (contenedor, vehículo, almacén, seguridad, calidad…) sin una versión distinta de código. La operación de patio (mapa de unidad, M&R y pintura) sigue disponible como plantilla y módulos.
+Motor de plantillas para inspecciones, auditorías y levantamientos. Cada empresa arma su propio proceso (contenedor, chasis, vehículo, almacén, seguridad, calidad…) sin una versión distinta de código. La operación de patio (mapa de unidad, M&R y pintura) sigue disponible como plantilla y módulos.
 
 Cada empresa opera en su propio esquema de base (`t_<uuid>`). Los datos no se mezclan.
+
+## Flujo de patio (ingreso diario)
+
+El trabajo **no** sigue un pipeline fijo: depende del **ingreso de contenedores y chasis al patio** (gate-in) de cada día.
+
+1. **Ingreso** — llegan unidades; se registran e inspeccionan (mapa de puntos o plantilla).
+2. **Hallazgos** — el inspector marca daños en el mapa (contenedor o chasis) y adjunta foto.
+3. **Taller M&R** — reparadores atienden el backlog del día (referencia: **~12 unidades/día** entre contenedores y chasis).
+4. **Pintura / acondicionado** — pintores trabajan el cupo del día (referencia: **5 a 7 contenedores/día**).
+5. **Cierre** — firmas, folio y reporte; listo para salida o stack.
+
+Capacidad de referencia (orientativa, no un límite del sistema):
+
+| Rol | Unidades / día | Unidad |
+|-----|----------------|--------|
+| Pintura | 5 – 7 | Contenedores |
+| Taller M&R | ~12 | Contenedores o chasis |
 
 ## Qué incluye
 
@@ -16,8 +33,18 @@ Cada empresa opera en su propio esquema de base (`t_<uuid>`). Los datos no se me
 - Estados configurables, tareas asignadas, puntaje y automatizaciones
 - Sucursales, activos con historial, etiquetas y buscador
 - Dashboard de indicadores a elección del administrador
-- Patio: mapa de contenedor, M&R y almacén / pintura
+- Patio: **mapa de contenedor**, **mapa de chasis** (formato de estado), M&R y almacén / pintura
 - Panel superadmin (`/super`) para empresas, usuarios, planes y soporte
+
+## Mapa de puntos
+
+### Contenedor
+Vistas: puertas, interior, lateral (izquierdo / derecho). Al tocar un punto se abre la cámara. Alineado a la operación de inspección de equipo en patio.
+
+### Chasis
+Diagrama superior alineado al **FORMATO DE ESTADO DE CHASIS** (M&R Mex): manitas de aire, seguros, patín, travesaños, carro de ejes, frenos, llantas, mangueras, calaveras, etc. Grupos filtrables; OK o foto por componente.
+
+Código: `src/lib/inspect-points.ts`, `src/lib/chassis-points.ts`, `src/components/container-map.tsx`, `src/components/chassis-map.tsx`.
 
 ## Cómo funciona
 
@@ -25,7 +52,7 @@ Cada empresa opera en su propio esquema de base (`t_<uuid>`). Los datos no se me
 En Postgres, en el esquema de la empresa:
 
 - Folios de plantilla: `t_<uuid>.records` (respuestas, incidencias, evidencias, historial)
-- Mapa de contenedor: `t_<uuid>.inspections` + `findings`
+- Mapa de contenedor / chasis: `t_<uuid>.inspections` + `findings`
 
 Código: `src/lib/server/engine.ts`, `src/lib/server/inspections.ts`  
 Estructura: `migrations/tenant/`
@@ -87,7 +114,7 @@ No existe un SMTP compartido. Pantalla: `/configuracion`.
 | `src/` | Sistema |
 | `migrations/tenant/` | Estructura de cada empresa |
 | `DEMO/` | Vista previa estática (GitHub Pages) |
-| `public/inspect/` | Fotos del mapa de puntos |
+| `public/inspect/` | Fotos del mapa de puntos de contenedor |
 
 ## Desarrollo
 
