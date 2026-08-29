@@ -1,8 +1,8 @@
 /**
  * Inspección de chasis — mapa de puntos sobre plano técnico.
- * Mismo patrón que contenedor: imagen + puntos tocables → foto.
+ * No es inspección de vehículo/auto.
  */
-export type ChassisViewId = "frente" | "superior" | "lateral" | "trasera";
+export type ChassisViewId = "plano" | "frente" | "superior" | "lateral" | "trasera";
 export type ChassisLateralSide = "izquierdo" | "derecho";
 
 export type ChassisPoint = {
@@ -18,15 +18,31 @@ export type ChassisPoint = {
 export const CHASSIS_SIZES = ["20", "40", "45", "48"] as const;
 
 export const CHASSIS_VIEWS: { id: ChassisViewId; title: string; src: string }[] = [
+  { id: "plano", title: "Plano", src: "/inspect/chassis-plano.svg" },
   { id: "lateral", title: "Lateral", src: "/inspect/chassis-lateral.svg" },
   { id: "superior", title: "Superior", src: "/inspect/chassis-superior.svg" },
   { id: "frente", title: "Frente", src: "/inspect/chassis-frente.svg" },
   { id: "trasera", title: "Trasera", src: "/inspect/chassis-trasera.svg" },
 ];
 
-/** Coordenadas % sobre cada plano técnico de chasis. */
 export const CHASSIS_POINTS: ChassisPoint[] = [
-  // Lateral (elevación)
+  // Plano completo (como el dibujo de ingeniería)
+  { id: "cp-01", view: "plano", n: "1", label: "Cabezal / cuello de ganso", component: "FRONTAL", x: 12, y: 17 },
+  { id: "cp-02", view: "plano", n: "2", label: "King pin / seguro delantero", component: "FRONTAL", x: 11, y: 19 },
+  { id: "cp-03", view: "plano", n: "3", label: "Patín (landing gear)", component: "FRONTAL", x: 24, y: 26 },
+  { id: "cp-04", view: "plano", n: "4", label: "Viga longitudinal", component: "ESTRUCTURA", x: 48, y: 17 },
+  { id: "cp-05", view: "plano", n: "5", label: "Llantas eje delantero", component: "LLANTAS", x: 69, y: 26 },
+  { id: "cp-06", view: "plano", n: "6", label: "Llantas eje trasero", component: "LLANTAS", x: 77, y: 26 },
+  { id: "cp-07", view: "plano", n: "7", label: "Estribo / defensa", component: "TRASERO", x: 88, y: 17 },
+  { id: "cp-08", view: "plano", n: "8", label: "Cuello de ganso (planta)", component: "FRONTAL", x: 10, y: 51 },
+  { id: "cp-09", view: "plano", n: "9", label: "Travesaños centrales", component: "ESTRUCTURA", x: 48, y: 51 },
+  { id: "cp-10", view: "plano", n: "10", label: "Bogie / llantas planta", component: "LLANTAS", x: 72, y: 38 },
+  { id: "cp-11", view: "plano", n: "11", label: "Defensa trasera (planta)", component: "TRASERO", x: 87, y: 51 },
+  { id: "cp-12", view: "plano", n: "12", label: "Manitas de aire / conexión luz", component: "FRONTAL", x: 16, y: 81 },
+  { id: "cp-13", view: "plano", n: "13", label: "Patín frente", component: "FRONTAL", x: 16, y: 90 },
+  { id: "cp-14", view: "plano", n: "14", label: "Calaveras / placa", component: "TRASERO", x: 60, y: 80 },
+  { id: "cp-15", view: "plano", n: "15", label: "Loderas / llantas traseras", component: "TRASERO", x: 68, y: 90 },
+
   { id: "cl-01", view: "lateral", n: "1", label: "Cabezal cuello de ganso", component: "FRONTAL", x: 12, y: 28 },
   { id: "cl-02", view: "lateral", n: "2", label: "Manitas de aire / conexión luz", component: "FRONTAL", x: 18, y: 42 },
   { id: "cl-03", view: "lateral", n: "3", label: "King pin / seguro delantero", component: "FRONTAL", x: 14, y: 48 },
@@ -40,7 +56,6 @@ export const CHASSIS_POINTS: ChassisPoint[] = [
   { id: "cl-11", view: "lateral", n: "11", label: "Tambores y maza", component: "FRENOS", x: 82, y: 68 },
   { id: "cl-12", view: "lateral", n: "12", label: "Placa / estribo trasero", component: "TRASERO", x: 93, y: 45 },
 
-  // Superior (planta)
   { id: "cs-01", view: "superior", n: "1", label: "Cuello de ganso", component: "FRONTAL", x: 10, y: 50 },
   { id: "cs-02", view: "superior", n: "2", label: "Travesaños frontales", component: "ESTRUCTURA", x: 24, y: 50 },
   { id: "cs-03", view: "superior", n: "3", label: "Patín / manivela", component: "FRONTAL", x: 32, y: 58 },
@@ -53,7 +68,6 @@ export const CHASSIS_POINTS: ChassisPoint[] = [
   { id: "cs-10", view: "superior", n: "10", label: "Balancín / perchas", component: "CARRO EJES", x: 82, y: 50 },
   { id: "cs-11", view: "superior", n: "11", label: "Defensa trasera", component: "TRASERO", x: 92, y: 50 },
 
-  // Frente
   { id: "cf-01", view: "frente", n: "1", label: "Cabezal cuello de ganso", component: "FRONTAL", x: 50, y: 18 },
   { id: "cf-02", view: "frente", n: "2", label: "Manitas de aire", component: "FRONTAL", x: 44, y: 32 },
   { id: "cf-03", view: "frente", n: "3", label: "Conexión de luz", component: "ELÉCTRICO", x: 58, y: 32 },
@@ -63,7 +77,6 @@ export const CHASSIS_POINTS: ChassisPoint[] = [
   { id: "cf-07", view: "frente", n: "7", label: "Patín izquierdo", component: "FRONTAL", x: 32, y: 78 },
   { id: "cf-08", view: "frente", n: "8", label: "Patín derecho", component: "FRONTAL", x: 68, y: 78 },
 
-  // Trasera
   { id: "ct-01", view: "trasera", n: "1", label: "Placa de circulación", component: "TRASERO", x: 50, y: 16 },
   { id: "ct-02", view: "trasera", n: "2", label: "Calaveras izq.", component: "TRASERO", x: 26, y: 16 },
   { id: "ct-03", view: "trasera", n: "3", label: "Calaveras der.", component: "TRASERO", x: 74, y: 16 },

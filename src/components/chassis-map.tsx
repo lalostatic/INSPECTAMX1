@@ -17,10 +17,7 @@ function capturedCount(view: ChassisViewId, captured: Record<string, ChassisCapt
   return chassisPointsForView(view).filter((p) => captured[p.id]?.thumb).length;
 }
 
-/**
- * Mapa de inspección de chasis: plano técnico + puntos tocables.
- * Misma interacción que el mapa de contenedor (sin listado dominante).
- */
+/** Mapa de inspección de chasis: plano técnico + puntos tocables. Sin listado. */
 export function ChassisMap({
   captured = {},
   selectedId,
@@ -40,7 +37,7 @@ export function ChassisMap({
   side?: ChassisLateralSide;
   onSideChange?: (side: ChassisLateralSide) => void;
 }) {
-  const [inner, setInner] = useState<ChassisViewId>(viewProp ?? initialView ?? "lateral");
+  const [inner, setInner] = useState<ChassisViewId>(viewProp ?? initialView ?? "plano");
   const [innerSide, setInnerSide] = useState<ChassisLateralSide>(sideProp ?? "derecho");
   const view = viewProp ?? inner;
   const side = sideProp ?? innerSide;
@@ -59,7 +56,7 @@ export function ChassisMap({
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-1 rounded-md bg-paper-2 p-1">
+      <div className="flex gap-1 overflow-x-auto rounded-md bg-paper-2 p-1">
         {CHASSIS_VIEWS.map((v) => {
           const n = capturedCount(v.id, captured);
           return (
@@ -68,7 +65,7 @@ export function ChassisMap({
               type="button"
               onClick={() => setView(v.id)}
               className={cn(
-                "flex min-h-11 flex-1 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-xs font-medium transition-colors",
+                "flex min-h-11 min-w-16 flex-1 flex-col items-center justify-center rounded-sm px-2 py-1.5 text-xs font-medium transition-colors",
                 view === v.id ? "bg-card text-navy shadow-card" : "text-steel hover:text-navy",
               )}
             >
@@ -101,7 +98,6 @@ export function ChassisMap({
         </div>
       ) : null}
 
-      {/* Plano técnico con puntos — interacción principal */}
       <div className="overflow-hidden rounded-md border border-line bg-white">
         <div className="relative mx-auto w-full">
           <img
