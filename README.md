@@ -133,3 +133,19 @@ Cuentas de demostración (contraseña `Muelle2026`):
 - Cerlan (activa): `admin@cerlan.mx`
 - Contri (vencida): `admin@contri.mx`
 - Istmo (prueba): `admin@istmo.mx`
+
+## Arquitectura y producción
+
+La app es **TanStack Start + Nitro (preset Vercel) + Postgres (Neon)**. Cada empresa vive en su schema `t_<uuid>`. No usa Cloudflare D1.
+
+- Arquitectura y decisión D1: `docs/ARCHITECTURE.md`
+- Cómo publicar: `docs/DEPLOY.md`
+- Variables (solo nombres): `.env.example`
+
+`inspectamx.com` debe apuntar a un origin Node (Vercel/Fly) detrás de Cloudflare DNS/SSL/WAF. El Worker `*.workers.dev` actual no es un runtime válido para este código.
+
+```
+npm install
+npm run deploy:check
+npm run dev
+```
