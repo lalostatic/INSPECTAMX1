@@ -127,7 +127,7 @@ export async function seedEngine(orgId: string, pack: "cerlan" | "contri" | "ist
 
   await addTemplate(sql, T, {
     name: "Estado de chasis",
-    description: "Formato de intercambio de chasis: vista superior, elevación y lista IZQ/DER.",
+    description: "Mapa de puntos sobre plano técnico: elevación, planta, frente y trasera.",
     category: "Chasis",
     kind: "chassis_map",
     fields: [],
@@ -275,4 +275,22 @@ export async function seedEngine(orgId: string, pack: "cerlan" | "contri" | "ist
       inspectorId,
     ],
   );
+}
+
+/** Idempotente: agrega plantilla chassis_map si el patio ya tenía semilla vieja. */
+export async function ensureChassisTemplate(orgId: string) {
+  const schema = await ensureOrgTenant(orgId);
+  const sql = await getSql();
+  const T = tenantTables(schema);
+  const [n] = await sql.query<{ c: number }>(
+    `select count(*)::int as c from ${T.templates} where kind = 'chassis_map'`,
+  );
+  if ((n?.c ?? 0) > 0) return;
+  await addTemplate(sql, T, {
+    name: "Estado de chasis",
+    description: "Mapa de puntos sobre plano técnico: elevación, planta, frente y trasera.",
+    category: "Chasis",
+    kind: "chassis_map",
+    fields: [],
+  });
 }
