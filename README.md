@@ -52,6 +52,16 @@ El inspector solo ve sus folios. Admin y oficina ven el patio propio, nunca el d
 
 ---
 
+## Cloudflare Pages (build 22:44 UTC)
+
+El log `ENOENT package.json` no es un fallo de `/chasis`. Pages estaba corriendo `npm run build` sobre un clone **sin** `package.json` (casi seguro la rama `gh-pages`, que es solo HTML).
+
+Qué hay que poner en el dashboard y qué hace ahora el build: [docs/CLOUDFLARE-PAGES.md](docs/CLOUDFLARE-PAGES.md).
+
+`npm run build` en Pages (`CF_PAGES=1`) publica el folleto `docs/` → `dist/`. No arranca Postgres ni el mapa de chasis.
+
+---
+
 ## Cambios hechos (agosto 2026)
 
 Producto
@@ -74,6 +84,7 @@ Operación del repo
 
 - `docs/ARCHITECTURE.md` — decisión y mapa del sistema.
 - `docs/DEPLOY.md` — cómo levantar el origen Node.
+- `docs/CLOUDFLARE-PAGES.md` — el ENOENT de Pages y la config del dashboard.
 - `.env.example` — nombres de variables, cero secretos.
 - CI: lint / test / typecheck / build.
 - Middleware `/healthz` y cabeceras de seguridad.
