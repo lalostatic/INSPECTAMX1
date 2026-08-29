@@ -2,150 +2,77 @@
 
 **Crea, ejecuta, supervisa y documenta cualquier proceso de inspección desde un solo lugar.**
 
-Producción: **https://inspectamx.com**
+Producto: [inspectamx.com](https://inspectamx.com)  
+Demo visual (para clientes): [lalostatic.github.io/INSPECTA-1.2](https://lalostatic.github.io/INSPECTA-1.2/)  
+Código: [github.com/lalostatic/INSPECTAMX](https://github.com/lalostatic/INSPECTAMX)
 
-Motor de plantillas para inspecciones, auditorías y levantamientos. Cada empresa arma su propio proceso (contenedor, chasis, vehículo, almacén, seguridad, calidad…) sin una versión distinta de código. La operación de patio (mapa de unidad, M&R y pintura) sigue disponible como plantilla y módulos.
+Patio de contenedores y chasis: inspección con mapa de puntos, taller M&R y pintura. Cada empresa opera en su propio esquema Postgres (`t_<uuid>`). Los datos no se mezclan.
 
-Cada empresa opera en su propio esquema de base (`t_<uuid>`). Los datos no se mezclan.
+No hay alta pública. El administrador da de alta a su gente con correo y contraseña. Un solo patio por empresa.
 
-## Flujo de patio (ingreso diario)
+## Qué hay de nuevo
 
-El trabajo **no** sigue un pipeline fijo: depende del **ingreso de contenedores y chasis al patio** (gate-in) de cada día.
+- **Inspección de chasis** con mapa de puntos sobre plano técnico (elevación, planta, frente y trasera). No es inspección de vehículo: se toca el punto en el dibujo y se abre la cámara.
+- **Inspección de contenedor** con el mismo patrón (puertas, interior, laterales).
+- El trabajo del día lo marca el **ingreso al patio** (gate-in), no un pipeline fijo.
+- Capacidad de referencia: pintura **5–7 contenedores/día**, taller M&R **~12 contenedores o chasis/día**.
+- Arranque asíncrono: el login aparece de inmediato; la semilla demo corre en segundo plano.
+- Plantilla `chassis_map` se agrega también a patios que ya tenían semilla.
 
-1. **Ingreso** — llegan unidades; se registran e inspeccionan (mapa de puntos o plantilla).
-2. **Hallazgos** — el inspector marca daños en el mapa (contenedor o chasis) y adjunta foto.
-3. **Taller M&R** — reparadores atienden el backlog del día (referencia: **~12 unidades/día** entre contenedores y chasis).
-4. **Pintura / acondicionado** — pintores trabajan el cupo del día (referencia: **5 a 7 contenedores/día**).
-5. **Cierre** — firmas, folio y reporte; listo para salida o stack.
+## Flujo de patio
 
-Capacidad de referencia (orientativa, no un límite del sistema):
-
-| Rol | Unidades / día | Unidad |
-|-----|----------------|--------|
-| Pintura | 5 – 7 | Contenedores |
-| Taller M&R | ~12 | Contenedores o chasis |
+1. **Ingreso** — llegan contenedores y chasis; se registran.
+2. **Inspección** — mapa de puntos + foto. El daño es opcional.
+3. **Taller M&R** — se atiende el backlog del día.
+4. **Pintura / acondicionado** — cupo del día.
+5. **Cierre** — firmas, folio y reporte; salida o stack.
 
 ## Qué incluye
 
-- Plantillas y constructor de formularios (texto, número, foto, firma, GPS, video, documento…)
-- Incidencias (daño, falla, no conformidad, riesgo, observación…)
-- Evidencias, geolocalización, firmas y modo sin red
-- Estados configurables, tareas asignadas, puntaje y automatizaciones
-- Sucursales, activos con historial, etiquetas y buscador
-- Dashboard de indicadores a elección del administrador
-- Patio: **mapa de contenedor**, **mapa de chasis** (formato de estado), M&R y almacén / pintura
-- Panel superadmin (`/super`) para empresas, usuarios, planes y soporte
+- Plantillas (contenedor, chasis, formularios de seguridad / almacén / vehículo)
+- Foto, firma, GPS, incidencias y modo sin red
+- Folios, tareas, puntaje y automatizaciones
+- M&R y almacén / pintura
+- Equipo por roles (admin, oficina, inspector, taller, pintura, consulta)
+- Panel superadmin en `/super`
 
 ## Mapa de puntos
 
-### Contenedor
-Vistas: puertas, interior, lateral (izquierdo / derecho). Al tocar un punto se abre la cámara. Alineado a la operación de inspección de equipo en patio.
+| Unidad | Vistas | Comportamiento |
+|---|---|---|
+| Contenedor | Puertas, interior, lateral izq./der. | Toque → cámara |
+| Chasis | Plano técnico, lateral, superior, frente, trasera | Toque → cámara |
 
-### Chasis
-Diagrama superior alineado al **FORMATO DE ESTADO DE CHASIS** (M&R Mex): manitas de aire, seguros, patín, travesaños, carro de ejes, frenos, llantas, mangueras, calaveras, etc. Grupos filtrables; OK o foto por componente.
+Ruta de chasis: `/chasis`. Código: `src/components/container-map.tsx`, `src/components/chassis-map.tsx`.
 
-Código: `src/lib/inspect-points.ts`, `src/lib/chassis-points.ts`, `src/components/container-map.tsx`, `src/components/chassis-map.tsx`.
+## Acceso
 
-## Cómo funciona
+Sin registro público. Entrada en `/login` con el correo de la empresa.
 
-### 1. Dónde se guardan las inspecciones
-En Postgres, en el esquema de la empresa:
+Cuentas demo (contraseña `Muelle2026`):
 
-- Folios de plantilla: `t_<uuid>.records` (respuestas, incidencias, evidencias, historial)
-- Mapa de contenedor / chasis: `t_<uuid>.inspections` + `findings`
-
-Código: `src/lib/server/engine.ts`, `src/lib/server/inspections.ts`  
-Estructura: `migrations/tenant/`
-
-### 2. Dónde se guardan las fotografías
-Tabla `t_<uuid>.photos` (mapa) y `t_<uuid>.record_evidence` (plantillas), JPEG en `data_url`.  
-Al tomar la foto se comprime: JPEG calidad 0.85, lado máximo 1600 px.  
-Código: `src/lib/compress-image.ts`
-
-### 3. Cómo inicia sesión cada inspector
-El administrador lo da de alta en **Equipo** (nombre, correo, contraseña, rol).  
-No hay alta pública. Entra en `/login` con ese correo. El dominio (`@empresa.mx`) lo ata a su empresa.  
-Código: `src/components/login-view.tsx`, `src/lib/server/tenant.ts`
-
-### 4. Cómo evitar que un inspector vea lo que no debe
-Menú según el rol **y** filtro en el servidor: el inspector solo lee sus folios (`user_id` o tarea asignada).  
-Admin y oficina ven todos los folios de **su** empresa, nunca de otra.  
-Consulta: solo lectura.  
-Código: `src/lib/roles.ts`
-
-### 5. Cómo recuperar inspecciones anteriores
-Los folios de mapa no se borran: se **archivan** (Configuración).  
-Los de plantilla quedan en historial del folio y del activo.
-
-### 6. Cómo hacer respaldos
-Administrador → **Configuración → Descargar respaldo**. JSON de ese patio.  
-Hágalo **antes de actualizar**. Código: `src/lib/server/backups.ts`
-
-### 7. Cómo generar reportes
-Ruta **`/reportes`** (CSV de patio) y, en cada folio de plantilla, imprimir / PDF / WhatsApp / Telegram.
-
-### 8. WhatsApp / Telegram sin pagar API
-En cada folio se abre `wa.me` y `t.me/share`. No hay token ni WhatsApp Business.  
-El **correo** usa el SMTP **de esa empresa**.  
-Código: `src/lib/share.ts`
-
-### 9. Cómo administrar usuarios
-**Equipo**: alta con correo/contraseña/rol. Solo el administrador.  
-El correo debe ser del dominio de la empresa.
-
-### 10. Cómo actualizar el sistema sin perder información
-Las migraciones **solo agregan** tablas y columnas (`migrations/` y `migrations/tenant/`).  
-Antes de actualizar: descargue el respaldo JSON.
-
-## Superadmin
-
-Correo: `desarrollo@inspectamx.com` (también `desarrolo@inspectamx.com`).  
-Ruta `/super`: empresas, usuarios, planes, logs, tickets, avisos, catálogos, impersonación.
-
-## SMTP por empresa
-
-Cada patio guarda host, puerto, usuario y contraseña en `t_<uuid>.smtp_settings`.  
-No existe un SMTP compartido. Pantalla: `/configuracion`.
-
-## Carpetas
-
-| Carpeta | Uso |
+| Rol | Correo |
 |---|---|
-| `src/` | Sistema |
-| `migrations/tenant/` | Estructura de cada empresa |
-| `DEMO/` | Vista previa estática (GitHub Pages) |
-| `public/inspect/` | Fotos del mapa de puntos de contenedor |
+| Superadmin | `desarrollo@inspectamx.com` |
+| Cerlan (activa) | `admin@cerlan.mx` |
+| Contri | `admin@contri.mx` |
+| Istmo | `admin@istmo.mx` |
+
+## Cómo está guardado
+
+- Folios de plantilla: `t_<uuid>.records`
+- Mapa de contenedor / chasis: `t_<uuid>.inspections` + hallazgos y fotos
+- Fotos en JPEG comprimido (lado máx. 1600 px)
+
+El inspector solo ve sus folios. Admin y oficina ven el patio propio, nunca el de otra empresa.
 
 ## Desarrollo
 
-```
+```bash
 npm install
 npm run dev
 ```
 
-## Demo
+Stack: TanStack Start, React 19, Vite, Postgres (Neon) o PGLite en local.
 
-Abra `DEMO/index.html` o el sitio estático del repositorio.
-
-Cuentas de demostración (contraseña `Muelle2026`):
-
-- Superadmin: `desarrolo@inspectamx.com`
-- Cerlan (activa): `admin@cerlan.mx`
-- Contri (vencida): `admin@contri.mx`
-- Istmo (prueba): `admin@istmo.mx`
-
-## Arquitectura y producción
-
-La app es **TanStack Start + Nitro (preset Vercel) + Postgres (Neon)**. Cada empresa vive en su schema `t_<uuid>`. No usa Cloudflare D1.
-
-- Arquitectura y decisión D1: `docs/ARCHITECTURE.md`
-- Cómo publicar: `docs/DEPLOY.md`
-- Variables (solo nombres): `.env.example`
-
-`inspectamx.com` debe apuntar a un origin Node (Vercel/Fly) detrás de Cloudflare DNS/SSL/WAF. El Worker `*.workers.dev` actual no es un runtime válido para este código.
-
-```
-npm install
-npm run deploy:check
-npm run dev
-```
+La carpeta `DEMO/` y `docs/` son el folleto estático. GitHub Pages **no** corre el patio con login y cámara; eso vive en el servidor con Postgres.
