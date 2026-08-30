@@ -2,19 +2,18 @@
 /**
  * Punto único de `npm run build`.
  *
- * Cloudflare Pages inyecta CF_PAGES=1. En ese entorno NO se corre Vite/Nitro
- * ni migraciones: el isolate no puede ejecutar pg/PGLite y el comando
- * `npm run build` del dashboard estaba rompiendo el deploy (ENOENT si la
- * rama era gh-pages, o 500 si se publicaba el Worker incompatible).
- *
- * En Pages se publica el folleto estático de docs/ → dist/.
- * En origen Node (Vercel/local) se mantiene vite build + migrate.
+ * En Cloudflare Pages (CF_PAGES=1) o Workers Builds (WORKERS_CI=1) NO se corre
+ * Vite/Nitro ni migraciones. Ese bundle es el que explota el isolate:
+ * previewAuthSecret → randomBytes en global scope + pg/PGLite.
  */
 import { cp, mkdir, writeFile, access } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { constants } from "node:fs";
 
-const isPages = process.env.CF_PAGES === "1";
+const isEdgeBuild =
+  process.env.CF_PAGES === "1" ||
+  process.env.WORKERS_CI === "1" ||
+  process.env.CLOUDFLARE_BUILD === "1";
 
 function run(command, args) {
   return new Promise((resolve, reject) => {
@@ -42,8 +41,10 @@ async function publishStaticBrochure() {
     : (await exists("DEMO/index.html"))
       ? "DEMO"
       : ".";
-  console.log(`[build] CF_PAGES=1 — publicando sitio estático desde ${source}/ → dist/`);
-  console.log("[build] La app con login/cámara NO corre en Pages. Ver docs/DEPLOY.md.");
+  console.log(
+    `[build] edge build — publicando sitio estático desde ${source}/ → dist/`,
+  );
+  console.log("[build] La app con login/cámara NO corre en el isolate. Ver docs/DEPLOY.md.");
   await mkdir("dist", { recursive: true });
   await cp(source, "dist", { recursive: true });
   await writeFile(
@@ -58,7 +59,7 @@ async function buildOrigin() {
   await run("npm", ["run", "db:migrate"]);
 }
 
-if (isPages) {
+if (isEdgeBuild) {
   await publishStaticBrochure();
 } else {
   await buildOrigin();
