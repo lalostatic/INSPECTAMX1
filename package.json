@@ -5,17 +5,20 @@
   "sideEffects": false,
   "type": "module",
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "pages",
+    "cloudflare/workers/*"
   ],
   "overrides": {
     "nf3": "0.3.17"
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
-    "dev:worker": "npm run dev -w @inspectamx/worker",
+    "dev:pages": "npm run dev -w @inspectamx/pages",
+    "dev:worker": "npm run dev -w @inspectamx/api",
     "build": "node scripts/build.mjs",
     "build:origin": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
-    "build:pages": "CF_PAGES=1 node scripts/build.mjs",
+    "build:pages": "npm run build -w @inspectamx/pages",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "node scripts/with-app-env.mjs vite build --mode development",
     "preview": "node scripts/with-app-env.mjs vite preview",
@@ -25,7 +28,7 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "deploy:check": "npm run lint && npm test && npm run typecheck",
-    "deploy:site": "npx wrangler deploy -c apps/worker/wrangler.toml"
+    "deploy:site": "npm run build -w @inspectamx/pages && npx wrangler deploy -c cloudflare/wrangler.toml"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
