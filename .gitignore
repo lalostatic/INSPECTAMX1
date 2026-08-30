@@ -1,11 +1,17 @@
-node_modules
+node_modules/
+**/node_modules/
+dist/
+**/dist/
 .vercel
+.wrangler/
+.output/
 artifacts
 .grok
 screenshots
 *.log
 .env
 .env.*
+!.env.example
 .DS_Store
 /tmp
 AGENTS.md
@@ -13,3 +19,7 @@ attachments/
 AGENTS.project.md
 INSPECTA-1.2.zip
 scripts/_capture-pages.mjs
+
+# No ignorar public/ de la raíz: ahi viven chassis-*.svg y fotos de inspección.
+# Solo salidas generadas:
+apps/**/public/

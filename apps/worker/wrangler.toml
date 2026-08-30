@@ -1,0 +1,15 @@
+# Worker de SITIO (folleto). No corre pg ni Better Auth.
+name = "inspectamx"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+workers_dev = true
+
+[assets]
+directory = "../../docs"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+
+[vars]
+VITE_AUTH_ENABLED = "true"
+BETTER_AUTH_URL = "https://inspectamx.com"

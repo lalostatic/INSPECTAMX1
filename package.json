@@ -4,11 +4,15 @@
   "private": true,
   "sideEffects": false,
   "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
   "overrides": {
     "nf3": "0.3.17"
   },
   "scripts": {
     "dev": "node scripts/with-app-env.mjs vite dev --host 0.0.0.0 --port 8080",
+    "dev:worker": "npm run dev -w @inspectamx/worker",
     "build": "node scripts/build.mjs",
     "build:origin": "node scripts/with-app-env.mjs vite build && npm run db:migrate",
     "build:pages": "CF_PAGES=1 node scripts/build.mjs",
@@ -20,7 +24,8 @@
     "test": "node --test 'scripts/**/*.test.mjs' && node --experimental-strip-types --test src/lib/app-data/app-data.test.ts src/lib/auth/gate-identity.test.ts src/lib/tenant-name.test.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "deploy:check": "npm run lint && npm test && npm run typecheck"
+    "deploy:check": "npm run lint && npm test && npm run typecheck",
+    "deploy:site": "npx wrangler deploy -c apps/worker/wrangler.toml"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.4",
@@ -76,6 +81,7 @@
     "zustand": "^5.0.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250812.0",
     "@eslint/js": "^9.20.0",
     "@types/node": "^22.16.5",
     "@types/pg": "^8.11.10",
@@ -94,6 +100,7 @@
     "prettier": "^3.4.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.56.1",
-    "vite": "^8.2.0"
+    "vite": "^8.2.0",
+    "wrangler": "^4.33.0"
   }
 }
