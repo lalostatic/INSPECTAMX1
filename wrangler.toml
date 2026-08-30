@@ -1,33 +1,22 @@
-# INSPECTAMX — Cloudflare Workers
+# INSPECTAMX — Cloudflare
 #
-# ESTE ARCHIVO NO DESPLIEGA LA APP.
-# El build actual usa Nitro preset "vercel" + `pg` + PGLite.
-# Ese grafo revienta el isolate (HTTP 500 HTTPError en
-# inspectamx.lalostatic.workers.dev).
+# Este archivo reexporta el Worker de SITIO (apps/worker):
+# folleto estático vía binding ASSETS. No corre pg ni Better Auth.
 #
-# Ver docs/ARCHITECTURE.md y docs/DEPLOY.md.
-# No ejecutes `wrangler deploy` hasta tener Hyperdrive + preset cloudflare_module.
+# Patio (login, /chasis, Postgres): origin Node. Ver docs/DEPLOY.md.
+# Deploy del sitio: npm run deploy:site
 
 name = "inspectamx"
-main = "dist/server/index.mjs"
+main = "apps/worker/src/index.ts"
 compatibility_date = "2026-08-01"
-compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
-# Descomentar solo cuando exista la base Neon y el binding:
-# [[hyperdrive]]
-# binding = "HYPERDRIVE"
-# id = "REPLACE_WITH_HYPERDRIVE_ID"
-
-# Fotos (ciclo siguiente). No activar sin cambiar photos.data_url → R2 key.
-# [[r2_buckets]]
-# binding = "PHOTOS"
-# bucket_name = "inspectamx-photos"
+[assets]
+directory = "./docs"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
 
 [vars]
 VITE_AUTH_ENABLED = "true"
 BETTER_AUTH_URL = "https://inspectamx.com"
-
-# Secretos (nunca aquí):
-#   npx wrangler secret put DATABASE_URL
-#   npx wrangler secret put BETTER_AUTH_SECRET
