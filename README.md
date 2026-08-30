@@ -2,18 +2,19 @@
 
 Patio de contenedores y chasis: inspección con mapa de puntos, taller M&R y pintura.
 
-**Marca:** INSPECTAMX  
-**Demo visual (clientes):** [lalostatic.github.io/INSPECTA-1.2](https://lalostatic.github.io/INSPECTA-1.2/)  
+**Demo visual:** [lalostatic.github.io/INSPECTA-1.2](https://lalostatic.github.io/INSPECTA-1.2/)  
 **Código:** [github.com/lalostatic/INSPECTAMX](https://github.com/lalostatic/INSPECTAMX)
 
-Cada empresa opera en su propio esquema Postgres (`t_<uuid>`). Los datos no se mezclan.  
-No hay alta pública. Un patio por empresa.
+Sin alta pública. Un patio (o varios) por empresa.
 
-`inspectamx.com` todavía **no tiene DNS**. El patio de producción es Node + Neon, no el Worker.
+Hay **dos capas** en este repo:
+
+1. **Patio** (`src/`) — TanStack Start + Neon/PGLite. Login, `/chasis`, folios.
+2. **Cloudflare** (`cloudflare/`, `pages/`) — Worker + D1 + R2 + folleto. Histórico y multi-sucursal a nivel plataforma.
 
 ---
 
-## Estructura del repo
+## Estructura
 
 ```
 README.md
@@ -22,80 +23,54 @@ tsconfig.json
 .github/workflows/deploy-pages.yml
 cloudflare/
   wrangler.toml
-  workers/
-    api/
-      src/index.ts
-      package.json
-pages/
-  src/index.tsx
-  package.json
-src/                    patio TanStack Start (login, /chasis, Postgres)
-server/                 middleware del patio
+  migrations/0001_inspectamx_d1.sql
+  workers/api/src/          index.ts, access.ts, types.ts
+pages/src/index.tsx
+src/                        patio Node
 ```
 
-| Ruta | Qué es |
+---
+
+## D1 (empresas → sucursales → inventario / folios)
+
+`company_id` va en todas las tablas de patio. La empresa agrega sucursales.
+
+```bash
+npx wrangler d1 create inspectamx-db
+# pegar database_id en cloudflare/wrangler.toml y wrangler.toml
+npx wrangler d1 execute inspectamx-db --local --file=cloudflare/migrations/0001_inspectamx_d1.sql
+npx wrangler r2 bucket create inspectamx-photos
+```
+
+| Actor | Alcance |
 |---|---|
-| `pages/` | Folleto público (Vite, `base: "./"`) |
-| `cloudflare/workers/api` | Worker: `ASSETS` + `/api/health`. No corre `pg` |
-| `src/` | Producto. No se partió en frontend/backend sueltos |
+| Developer | Global. No opera el folio de patio. |
+| Admin empresa | Solo su `company_id`, todas sus sucursales. |
+| Inspector | Su empresa + sus folios / sucursal. |
+
+`GET /api/folios/history` aplica ese filtro.  
+Cron diario: fotos `hot` con 180 días → `historical` en R2.
+
+Cabeceras provisionales: `x-inspectamx-user`, `x-inspectamx-platform`, `x-inspectamx-company`, `x-inspectamx-branch`, `x-inspectamx-role`.
+
+Detalle: [docs/D1-ACCESS.md](docs/D1-ACCESS.md).
 
 ---
 
-## Qué es el producto
-
-El inspector toca el punto en el mapa, toma la foto y cierra el folio. El trabajo del día lo marca el **ingreso al patio**.
-
-1. Ingreso — contenedores y chasis.
-2. Inspección — mapa + foto.
-3. Taller M&R — ~12 unidades/día de referencia.
-4. Pintura — 5–7 contenedores/día.
-5. Cierre — folio y firma.
-
-Ruta de chasis: `/chasis` en el patio (`src/routes/chasis.tsx`).
-
----
-
-## Acceso (solo el patio, no Pages)
-
-Sin registro público. `/login` con correo de la empresa.
-
-Cuentas demo (contraseña `Muelle2026`), solo semilla local:
-
-| Rol | Correo |
-|---|---|
-| Superadmin | `desarrollo@inspectamx.com` |
-| Cerlan | `admin@cerlan.mx` |
-
----
-
-## Comandos
+## Patio (Node)
 
 ```bash
 npm install
-npm run dev                 # patio local :8080
-npm run dev:pages           # folleto Vite
-npm run build:pages         # pages/dist (rutas relativas)
-npm run deploy:site         # build pages + wrangler (cloudflare/)
-npm run lint && npm test && npm run typecheck
+npm run dev
 ```
 
-GitHub Actions: `.github/workflows/deploy-pages.yml` publica `pages/dist`.
-En el repo, Settings → Pages → Source = GitHub Actions.
-
-Worker:
-
-```bash
-npm run deploy:site
-# GET /api/health → { ok: true, service: "inspectamx-api" }
-```
+Cuentas demo locales (contraseña `Muelle2026`): `desarrollo@inspectamx.com`, `admin@cerlan.mx`.
 
 ---
 
-## Qué ya no aplica
+## Sitio y Worker
 
-- D1 como base del patio.
-- Workers como runtime de login/`/chasis`.
-- Alta pública.
-- Tratar INSPECTA 1.2 como nombre del producto (solo URL de demo).
-
-Detalle: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/DEPLOY.md](docs/DEPLOY.md).
+```bash
+npm run build:pages
+npm run deploy:site
+```
