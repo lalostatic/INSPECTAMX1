@@ -1,0 +1,14 @@
+name = "inspectamx"
+main = "workers/api/src/index.ts"
+compatibility_date = "2026-08-01"
+workers_dev = true
+
+[assets]
+directory = "../pages/dist"
+binding = "ASSETS"
+html_handling = "auto-trailing-slash"
+not_found_handling = "single-page-application"
+
+[vars]
+VITE_AUTH_ENABLED = "true"
+BETTER_AUTH_URL = "https://inspectamx.com"
