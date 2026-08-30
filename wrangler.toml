@@ -1,18 +1,12 @@
-# INSPECTAMX — Cloudflare
-#
-# Este archivo reexporta el Worker de SITIO (apps/worker):
-# folleto estático vía binding ASSETS. No corre pg ni Better Auth.
-#
-# Patio (login, /chasis, Postgres): origin Node. Ver docs/DEPLOY.md.
-# Deploy del sitio: npm run deploy:site
-
+# Punto de entrada que Cloudflare busca en la raíz.
+# La fuente de verdad es cloudflare/wrangler.toml.
 name = "inspectamx"
-main = "apps/worker/src/index.ts"
+main = "cloudflare/workers/api/src/index.ts"
 compatibility_date = "2026-08-01"
 workers_dev = true
 
 [assets]
-directory = "./docs"
+directory = "./pages/dist"
 binding = "ASSETS"
 html_handling = "auto-trailing-slash"
 not_found_handling = "single-page-application"
