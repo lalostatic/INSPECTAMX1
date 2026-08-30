@@ -1,5 +1,4 @@
-# Punto de entrada que Cloudflare busca en la raíz.
-# La fuente de verdad es cloudflare/wrangler.toml.
+# Fuente de verdad: cloudflare/wrangler.toml
 name = "inspectamx"
 main = "cloudflare/workers/api/src/index.ts"
 compatibility_date = "2026-08-01"
@@ -14,3 +13,16 @@ not_found_handling = "single-page-application"
 [vars]
 VITE_AUTH_ENABLED = "true"
 BETTER_AUTH_URL = "https://inspectamx.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "inspectamx-db"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "cloudflare/migrations"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "inspectamx-photos"
+
+[triggers]
+crons = ["0 6 * * *"]

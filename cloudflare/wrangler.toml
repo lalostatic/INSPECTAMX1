@@ -12,3 +12,19 @@ not_found_handling = "single-page-application"
 [vars]
 VITE_AUTH_ENABLED = "true"
 BETTER_AUTH_URL = "https://inspectamx.com"
+
+# Crear y pegar el id:
+#   npx wrangler d1 create inspectamx-db
+[[d1_databases]]
+binding = "DB"
+database_name = "inspectamx-db"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+#   npx wrangler r2 bucket create inspectamx-photos
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "inspectamx-photos"
+
+[triggers]
+crons = ["0 6 * * *"]
